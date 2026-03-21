@@ -1,0 +1,63 @@
+name: Build Electron App
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Electron build deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y rpm fakeroot dpkg
+
+      - name: Build Electron (AppImage + RPM)
+        run: npm run electron:dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
+
+      - name: List build artifacts
+        run: ls -lh dist-electron/
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GlowAI-linux
+          path: |
+            dist-electron/*.AppImage
+            dist-electron/*.rpm
+          retention-days: 30
+
+      - name: Create Codeberg Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: https://codeberg.org/forgejo/release-action@v1
+        with:
+          direction: upload
+          release-dir: dist-electron
+          release-notes: |
+            ## GlowAI Electron Build
+
+            Desktop app for Linux (Fedora / Ubuntu / Debian).
+
+            **Install:**
+            - AppImage: `chmod +x GlowAI*.AppImage && ./GlowAI*.AppImage`
+            - RPM (Fedora): `sudo rpm -i GlowAI*.rpm`
+          token: ${{ secrets.GITHUB_TOKEN }}

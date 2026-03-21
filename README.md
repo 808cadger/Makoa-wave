@@ -4,10 +4,6 @@
 
 ---
 
-[![GlowAI Demo](https://img.youtube.com/vi/1bf0oJPKfQM/maxresdefault.jpg)](https://youtube.com/shorts/1bf0oJPKfQM)
-
----
-
 ## What it does
 
 | Feature | Description |
@@ -94,3 +90,4 @@ android/
 ---
 
 Built with [Claude claude-opus-4-6](https://anthropic.com) · Capacitor · Vanilla JS
+

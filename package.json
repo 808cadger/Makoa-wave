@@ -8,6 +8,10 @@
   "devDependencies": {
     "typescript": "^5.9.3"
   },
+  "overrides": {
+    "minimatch": ">=10.2.3",
+    "tar": ">=7.5.11"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

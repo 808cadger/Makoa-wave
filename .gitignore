@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Android build outputs
+android/build/
+android/.gradle/
+android/app/build/
+android/.cxx/
+android/app/.cxx/
+
+# Android local config (machine-specific)
+android/local.properties
+
+# APK files
+*.apk
+*.aab
+
+# Environment / secrets
+.env
+.env.local
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expo / Capacitor
+.expo/
+dist/

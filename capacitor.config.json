@@ -1,0 +1,6 @@
+{
+  "appId": "com.glowai.skinanalysis",
+  "appName": "GlowAI",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

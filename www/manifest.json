@@ -1,0 +1,25 @@
+{
+  "name": "GlowAI",
+  "short_name": "GlowAI",
+  "description": "AI-powered skin analysis and beauty assistant",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#C4788A",
+  "background_color": "#070508",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

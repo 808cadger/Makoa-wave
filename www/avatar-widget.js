@@ -147,10 +147,23 @@
     + '<stop offset="0%" stop-color="#1565c0" stop-opacity="0.9"/>'
     + '<stop offset="100%" stop-color="#0d1b2a"/></linearGradient></defs></svg>';
 
+  /* ─── Demo answers (no API key) ───────────────────────────────── */
+  var DEMO = [
+    'This is a demo response — add your Claude API key in Settings to get real AI answers. May the Force guide you!',
+    'Demo mode active. Enter your Claude API key (sk-ant-...) in the app Settings to unlock live answers.',
+    'I\'m running on demo power right now. Add your API key in Settings and I\'ll answer for real. The Force is patient.',
+    'No API key detected — demo mode engaged. Head to Settings and enter your Claude key to activate live AI. Strong with the Force, you will be.',
+  ];
+  var _di = -1;
+  function demoAnswer() {
+    var n; do { n = Math.floor(Math.random() * DEMO.length); } while (n === _di);
+    _di = n; return DEMO[n];
+  }
+
   /* ─── Claude call ──────────────────────────────────────────────── */
   function ask(question, cb) {
     var apiKey = getApiKey();
-    if (!apiKey) { cb('Add your Claude API key in Settings to get AI answers.'); return; }
+    if (!apiKey) { cb(demoAnswer()); return; }
 
     var sys = 'You are a helpful AI assistant in ' + getAppName() + ', ' + (getCtx() || 'a helpful app')
       + '. Answer in 2-3 sentences max. Be direct and clear. Add one brief Jedi-style encouragement at the end (one sentence).';
@@ -164,7 +177,7 @@
         'anthropic-dangerous-direct-browser-calls': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 220,
         system: sys,
         messages: [{ role: 'user', content: question }]

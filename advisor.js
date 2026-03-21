@@ -246,37 +246,13 @@ Use 2-4 tools per response. Never give generic advice — base everything on the
     let continueLoop = true;
 
     while (continueLoop) {
-      const controller = new AbortController();
-      const timeout    = setTimeout(() => controller.abort(), 45000);
-      let res;
-      try {
-        res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          signal: controller.signal,
-          headers: {
-            'x-api-key': state.apiKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-calls': 'true',
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify({
-            model:      'claude-sonnet-4-6',
-            max_tokens: 8000,
-            system:     SYSTEM_PROMPT,
-            tools:      TOOLS,
-            messages,
-          }),
-        });
-      } finally {
-        clearTimeout(timeout);
-      }
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `HTTP ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await ClaudeAPI.call(state.apiKey, {
+        model:      'claude-sonnet-4-6',
+        max_tokens: 8000,
+        system:     SYSTEM_PROMPT,
+        tools:      TOOLS,
+        messages,
+      });
       _removeTyping();
 
       if (data.stop_reason === 'tool_use') {

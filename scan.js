@@ -241,26 +241,12 @@ Return ONLY this JSON structure:
 
 Include 3-5 concerns and 3-5 recommendations. Return ONLY the JSON object.` });
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': state.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-calls': 'true',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-6',
-        max_tokens: 1500,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userContent }],
-      }),
+    const data = await ClaudeAPI.call(state.apiKey, {
+      model: 'claude-opus-4-6',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }],
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-    const data = await res.json();
     const rawText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('').trim() || '{}';
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Invalid JSON response from AI');
@@ -291,26 +277,12 @@ Return ONLY this JSON:
 
 3-5 concerns, 3-5 recommendations. Return ONLY the JSON.`;
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': state.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-calls': 'true',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+    const data = await ClaudeAPI.call(state.apiKey, {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }],
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-    const data = await res.json();
     const rawText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('').trim() || '{}';
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Invalid JSON response from AI');

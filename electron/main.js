@@ -178,11 +178,11 @@ ipcMain.handle('update:install', () => {
   autoUpdater.quitAndInstall()
 })
 
-app.whenReady().then(() => {
-  // GPU acceleration
-  app.commandLine.appendSwitch('enable-gpu-rasterization')
-  app.commandLine.appendSwitch('enable-zero-copy')
+// GPU acceleration — must be set before app.whenReady()
+app.commandLine.appendSwitch('enable-gpu-rasterization')
+app.commandLine.appendSwitch('enable-zero-copy')
 
+app.whenReady().then(() => {
   createWindow()
   createTray()
 })

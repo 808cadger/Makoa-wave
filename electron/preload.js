@@ -81,6 +81,7 @@ function injectDropZone () {
     reader.onload = ev => {
       window.dispatchEvent(new CustomEvent('electronImageDrop', { detail: ev.target.result }))
     }
+    reader.onerror = () => console.warn('GlowAI: FileReader error on dropped image')
     reader.readAsDataURL(file)
   })
 }

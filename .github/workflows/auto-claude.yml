@@ -122,9 +122,9 @@ Claude must never:
 - Generate infinite loops or unbounded recursion
 - Access external URLs without explicit permission
 
-## GitHub Compliance
+## Codeberg Compliance
 
-This repo follows GitHub's Terms of Service. Claude-generated code must not:
+This repo follows Codeberg's Terms of Service. Claude-generated code must not:
 
 - Scrape data without permission
 - Generate spam/abuse

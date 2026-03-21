@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  const SHARE_URL = 'https://cadger808.github.io/glowai';
+  const SHARE_URL = 'https://cadger808.codeberg.page/glowai';
   const SHARE_TITLE = 'GlowAI — Your AI Skincare Esthetician';
   const SHARE_TEXT  = 'Check out GlowAI — an AI-powered skincare app that analyzes your skin and builds personalized routines! 🌸';
 

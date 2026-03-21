@@ -779,7 +779,7 @@ function initNavDrag() {
 // ═══════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════
-(function initApp() {
+function initApp() {
   loadState();
   showScreen('splash');
   initNavDrag();
@@ -791,4 +791,10 @@ function initNavDrag() {
       showScreen('onboard1');
     }
   }, 2400);
-})();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}

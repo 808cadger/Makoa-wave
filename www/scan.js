@@ -134,7 +134,7 @@ const scanModule = (() => {
     // ── Big animated score ring ──
     const arc   = document.getElementById('results-score-arc');
     const numEl = document.getElementById('results-score-num');
-    const circumference = 2 * Math.PI * 68; // ≈427
+    const circumference = 427; // matches stroke-dasharray="427" in HTML SVG
 
     if (arc) {
       const offset = circumference - (score / 100) * circumference;

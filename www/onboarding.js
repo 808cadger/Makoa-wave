@@ -93,17 +93,20 @@ const onboarding = (() => {
           _shakeBanner('ob-skintype', 'Please select your skin type');
           return;
         }
+        if (!state.profile) state.profile = {};
         state.profile.skinType = _skinType;
         showScreen('onboard4');
         break;
       }
       case 4: {
         // Tone is optional
+        if (!state.profile) state.profile = {};
         state.profile.skinTone = _skinTone || '';
         showScreen('onboard5');
         break;
       }
       case 5: {
+        if (!state.profile) state.profile = {};
         const concerns = [...document.querySelectorAll('#ob-concerns .select-chip.selected')]
           .map(c => c.dataset.val);
         state.profile.concerns = concerns;
@@ -111,6 +114,7 @@ const onboarding = (() => {
         break;
       }
       case 6: {
+        if (!state.profile) state.profile = {};
         const sleep  = document.querySelector('#ob-sleep  .select-chip.selected')?.dataset.val || '';
         const water  = document.querySelector('#ob-water  .select-chip.selected')?.dataset.val || '';
         const stress = document.querySelector('#ob-stress .select-chip.selected')?.dataset.val || '';

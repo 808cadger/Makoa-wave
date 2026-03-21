@@ -187,7 +187,8 @@ Use 2-4 tools per response. Never give generic advice — base everything on the
     const text  = input?.value.trim();
     if (!text || state.runningAnalysis) return;
     if (input) { input.value = ''; input.style.height = 'auto'; }
-    document.getElementById('starter-pills').style.display = 'none';
+    const pillsEl = document.getElementById('starter-pills');
+    if (pillsEl) pillsEl.style.display = 'none';
     await _callClaude(text, false);
   }
 

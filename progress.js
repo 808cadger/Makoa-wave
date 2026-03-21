@@ -136,11 +136,19 @@ const progressModule = (() => {
   /**
    * Animate the line drawing by revealing it left-to-right using
    * a clip rectangle that expands over 800ms.
+   * Uses an offscreen canvas snapshot + drawImage so the clip is respected.
    */
   function _animateChartDraw(canvas, ctx, pts, H, W) {
-    const total  = 800;
-    const start  = performance.now();
-    const img    = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const total = 800;
+    const start = performance.now();
+    const DPR   = window.devicePixelRatio || 1;
+
+    // Snapshot the already-drawn chart into an offscreen canvas
+    const offscreen = document.createElement('canvas');
+    offscreen.width  = canvas.width;
+    offscreen.height = canvas.height;
+    const offCtx = offscreen.getContext('2d');
+    offCtx.drawImage(canvas, 0, 0);
 
     const tick = (now) => {
       const progress = Math.min(1, (now - start) / total);
@@ -151,7 +159,8 @@ const progressModule = (() => {
       ctx.beginPath();
       ctx.rect(0, 0, revealW, H);
       ctx.clip();
-      ctx.putImageData(img, 0, 0);
+      // drawImage respects the clip path; putImageData does not
+      ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height, 0, 0, W, H);
       ctx.restore();
 
       if (progress < 1) requestAnimationFrame(tick);

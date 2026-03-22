@@ -3,16 +3,18 @@
  * Cache-first for app shell; stale-while-revalidate for everything else.
  */
 
-const CACHE    = 'glowai-v2';
+const CACHE    = 'glowai-v3';
 const PRECACHE = [
   './',
   './index.html',
+  './offline.html',
   './app.js',
   './onboarding.js',
   './scan.js',
   './routine.js',
   './advisor.js',
   './progress.js',
+  './avatar-widget.js',
   './share-widget.js',
   './manifest.json',
   './icons/icon-192.png',
@@ -51,7 +53,7 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return res;
-      }).catch(() => cached);
+      }).catch(() => cached || caches.match('./offline.html'));
       return cached || fresh;
     })
   );

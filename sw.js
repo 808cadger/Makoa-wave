@@ -7,6 +7,7 @@ const CACHE    = 'glowai-v2';
 const PRECACHE = [
   './',
   './index.html',
+  './api-client.js',
   './app.js',
   './onboarding.js',
   './scan.js',

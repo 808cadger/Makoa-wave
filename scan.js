@@ -111,7 +111,16 @@ const scanModule = (() => {
       showScreen('results');
 
     } catch(e) {
-      errEl.textContent = 'Analysis failed: ' + (e.message || 'Unknown error. Check your API key.');
+      const s = e.status;
+      let msg;
+      if (e.circuitOpen)    msg = 'Service temporarily paused — try again in a moment.';
+      else if (s === 401)   msg = 'Invalid API key — tap ⚙️ Settings to update it.';
+      else if (s === 429)   msg = 'Too many requests — wait a moment, then try again.';
+      else if (s === 529)   msg = 'Claude is overloaded right now — try again shortly.';
+      else if (s >= 500)    msg = 'Claude is having a moment — try again in a few seconds.';
+      else if (e.timeout)   msg = 'Request timed out — check your connection and retry.';
+      else                  msg = 'Analysis failed: ' + (e.message || 'Unknown error. Check your API key.');
+      errEl.textContent = msg;
       errEl.classList.remove('hidden');
     } finally {
       btn.disabled = false;

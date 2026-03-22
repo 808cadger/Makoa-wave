@@ -230,7 +230,16 @@ Use 2-4 tools per response. Never give generic advice — base everything on the
       _removeTyping();
       _hideTaskBar();
       if (errEl) {
-        errEl.textContent = 'Error: ' + (e.message || 'Something went wrong. Check your API key in Settings.');
+        const s = e.status;
+        let msg;
+        if (e.circuitOpen)    msg = 'Service temporarily paused — try again in a moment.';
+        else if (s === 401)   msg = 'Invalid API key — tap ⚙️ Settings to update it.';
+        else if (s === 429)   msg = 'Too many requests — wait a moment, then try again.';
+        else if (s === 529)   msg = 'Claude is overloaded right now — try again shortly.';
+        else if (s >= 500)    msg = 'Claude is having a moment — try again in a few seconds.';
+        else if (e.timeout)   msg = 'Request timed out — check your connection and retry.';
+        else                  msg = 'Error: ' + (e.message || 'Something went wrong. Check your API key in Settings.');
+        errEl.textContent = msg;
         errEl.classList.remove('hidden');
       }
     } finally {

@@ -20,6 +20,10 @@
     var m = document.querySelector('meta[name="description"]');
     return (m && m.content) ? m.content : 'Check out this free AI app!';
   }
+  function getApkUrl() {
+    var m = document.querySelector('meta[name="apk-url"]');
+    return (m && m.content) ? m.content : '';
+  }
 
   /* ─── Styles ──────────────────────────────────────────────────── */
   var CSS = [
@@ -41,6 +45,9 @@
     '.sw-install{width:100%;padding:9px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;display:none}',
     '.sw-install:hover{background:rgba(255,255,255,0.08);color:#fff}',
     '.sw-install.visible{display:block}',
+    '.sw-download{width:100%;padding:9px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;text-decoration:none;display:none;text-align:center;line-height:2}',
+    '.sw-download.visible{display:block}',
+    '.sw-download:hover{background:rgba(255,255,255,0.14);color:#fff}',
     '.sw-toast{position:fixed;bottom:90px;left:18px;background:rgba(30,30,50,0.95);color:#fff;padding:8px 14px;border-radius:10px;font-size:13px;z-index:100000;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none}',
     '.sw-toast.show{opacity:1;transform:translateY(0)}'
   ].join('');
@@ -49,9 +56,10 @@
   function build() {
     if (document.getElementById('sw-wrap')) return;
 
-    var url   = getShareUrl();
-    var title = getShareTitle();
-    var text  = getShareText();
+    var url    = getShareUrl();
+    var title  = getShareTitle();
+    var text   = getShareText();
+    var apkUrl = getApkUrl();
 
     // Accent color from meta (matches per-app brand) or default purple
     var accentMeta = document.querySelector('meta[name="theme-color"]');
@@ -76,7 +84,8 @@
         '<button class="sw-btn copy" id="sw-copy">Copy link</button>' +
         (navigator.share ? '<button class="sw-btn share" id="sw-share">Share</button>' : '') +
       '</div>' +
-      '<button class="sw-install" id="sw-install">+ Add to Home Screen</button>';
+      '<button class="sw-install" id="sw-install">+ Add to Home Screen</button>' +
+      (apkUrl ? '<a class="sw-download visible" id="sw-download" href="' + apkUrl + '" target="_blank" rel="noopener">&#11015; Download APK</a>' : '');
 
     var fab = document.createElement('button');
     fab.className = 'sw-fab';

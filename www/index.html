@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.anthropic.com;">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -15,6 +16,7 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="theme-color" content="#C4788A">
+  <meta name="share-url" content="https://cadger808.codeberg.page/glowai">
   <style>
     /* ══════════════════════════════════════════
        DESIGN TOKENS
@@ -1305,7 +1307,8 @@
 ══════════════════════════════════════════════ -->
 <div id="scan" class="screen">
   <div class="screen-header">
-    <div>
+    <div class="back-btn" onclick="showScreen(window._prevScreen||'home')">‹</div>
+    <div style="flex:1;padding-left:10px">
       <div style="font-size:13px;color:var(--text-muted)">Daily Check-In</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Skin Journal</div>
     </div>
@@ -1403,6 +1406,7 @@
 ══════════════════════════════════════════════ -->
 <div id="advisor" class="screen">
   <div class="advisor-header">
+    <div class="back-btn" onclick="showScreen(window._prevScreen||'home')" style="margin-right:4px">‹</div>
     <div class="advisor-avatar">✨</div>
     <div class="advisor-info">
       <div class="advisor-name">GlowAI</div>
@@ -1434,7 +1438,8 @@
 ══════════════════════════════════════════════ -->
 <div id="routine" class="screen">
   <div class="screen-header">
-    <div>
+    <div class="back-btn" onclick="showScreen(window._prevScreen||'home')">‹</div>
+    <div style="flex:1;padding-left:10px">
       <div style="font-size:13px;color:var(--text-muted)">Daily Routine</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">My Routine</div>
     </div>
@@ -1461,7 +1466,8 @@
 ══════════════════════════════════════════════ -->
 <div id="progress" class="screen">
   <div class="screen-header">
-    <div>
+    <div class="back-btn" onclick="showScreen(window._prevScreen||'home')">‹</div>
+    <div style="flex:1;padding-left:10px">
       <div style="font-size:13px;color:var(--text-muted)">Skin Journey</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Progress</div>
     </div>
@@ -1626,6 +1632,7 @@
 <!-- ══════════════════════════════════════════════
      SCRIPTS (modules loaded in order)
 ══════════════════════════════════════════════ -->
+<script src="./api-client.js"></script>
 <script src="./app.js"></script>
 <script src="./onboarding.js"></script>
 <script src="./scan.js"></script>

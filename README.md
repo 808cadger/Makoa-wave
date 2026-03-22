@@ -1,6 +1,20 @@
 # GlowAI
 
-> AI-powered skin analysis app — scan your face, get a personalized skincare routine, track your progress, and chat with an AI dermatology assistant.
+> AI skin analysis app — scan your face, get a personalized skincare routine, track your progress, and chat with an AI dermatology assistant.
+
+[**PWA →**](https://cadger808.codeberg.page/glowai) · [**Download APK / Desktop →**](https://codeberg.org/cadger808/glowai/releases) · [Codeberg](https://codeberg.org/cadger808/glowai)
+
+---
+
+## Can anyone use this?
+
+**Yes — install in 10 seconds, no account needed.**
+
+1. Open [cadger808.codeberg.page/glowai](https://cadger808.codeberg.page/glowai) on any device
+2. Tap "Add to Home Screen" (or download the APK for Android / AppImage for Linux)
+3. Open the app → tap ⚙️ Settings → paste your [Anthropic API key](https://console.anthropic.com)
+
+That's it. The key is stored only on your device.
 
 ---
 
@@ -8,86 +22,51 @@
 
 | Feature | Description |
 |---------|-------------|
-| 📸 **Skin analysis** | Camera-based scan powered by Claude's vision — identifies skin type, concerns, and conditions |
-| 🧴 **Routine builder** | Personalized morning and evening skincare routine based on your analysis |
-| 📊 **Progress tracking** | Track your skin over time with scored metrics |
-| 💬 **AI chat** | Ask anything about skincare — ingredients, routines, products |
-| 🎯 **Smart recommendations** | Product and ingredient suggestions tailored to your skin |
+| 📸 **Skin scan** | Camera-based scan — Claude Vision identifies skin type, concerns, and conditions |
+| 🧴 **Routine builder** | Personalized AM/PM skincare routine based on your analysis |
+| 📊 **Progress tracking** | Scored skin metrics tracked over time |
+| 💬 **AI advisor** | Ask anything — ingredients, routines, products |
 | 🌙 **Daily check-ins** | Quick daily skin logs to monitor changes |
+| 🤖 **AI avatar** | Floating dermatology assistant on every screen |
+| 📤 **Share / install** | One-tap PWA install + Download APK button in the share widget |
+| 🖥️ **Desktop app** | Electron build (AppImage + RPM) for Linux |
+
+---
+
+## Install options
+
+| Method | Steps |
+|--------|-------|
+| **PWA** | Open link → "Add to Home Screen" — works on Android, iOS, desktop |
+| **Android APK** | [Download](https://codeberg.org/cadger808/glowai/releases) → open file on device |
+| **ADB install** | `adb install -r app-debug.apk` |
+| **Linux desktop** | Download `.AppImage` or `.rpm` from [Releases](https://codeberg.org/cadger808/glowai/releases) |
+
+---
+
+## Dev quick start
+
+```bash
+git clone https://codeberg.org/cadger808/glowai.git
+cd glowai && npm install
+
+npx serve .                                            # browser dev
+npx cap sync android && cd android && ./gradlew assembleDebug  # APK
+npm run electron:dist                                  # Electron
+```
 
 ---
 
 ## Tech stack
 
-```
-www/          Vanilla JS + HTML/CSS (Capacitor web app)
-android/      Capacitor Android wrapper
-Claude API    claude-opus-4-6 vision + text (Anthropic)
-```
+| Layer | Tech |
+|-------|------|
+| UI | Vanilla HTML/CSS/JS |
+| AI | Claude Sonnet 4.6 (chat) · Claude Opus 4.6 (Vision scan) |
+| Mobile | Capacitor → Android APK |
+| Desktop | Electron (AppImage / RPM) |
+| CI | Forgejo Actions (APK + Pages + Electron) |
 
 ---
 
-## Getting started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org) 18+
-- [Android Studio](https://developer.android.com/studio) (for Android builds)
-- An [Anthropic API key](https://console.anthropic.com)
-
-### Run in browser
-
-```bash
-npm install
-npx cap sync
-# Open www/index.html in your browser
-# Enter your Anthropic API key in the app settings
-```
-
-### Build for Android
-
-```bash
-npm install
-npx cap sync android
-npx cap open android
-# Build & run from Android Studio
-```
-
----
-
-## API key setup
-
-GlowAI asks for your Anthropic API key on first launch and stores it locally in `localStorage` — it is **never sent anywhere except directly to Anthropic's API**.
-
-Get a key at [console.anthropic.com](https://console.anthropic.com).
-
----
-
-## Architecture
-
-```
-www/
-  index.html     ← Full app (single-file, vanilla JS)
-                   • Camera capture + base64 encoding
-                   • Claude vision API calls (direct from client)
-                   • Skin analysis, routine generation, chat
-                   • localStorage persistence
-
-android/
-  app/           ← Capacitor Android shell
-  capacitor.build.gradle
-```
-
----
-
-## Privacy
-
-- All analysis is done via direct API calls from your device to Anthropic
-- No backend server, no data collection
-- Photos are processed in-memory and never stored on any server
-- Your API key stays on your device
-
----
-
-Built with [Claude claude-opus-4-6](https://anthropic.com) · Capacitor · Vanilla JS
-
+**Developer:** [codeberg.org/cadger808](https://codeberg.org/cadger808)

@@ -90,6 +90,8 @@ function loadState() {
     lastCompleted: routineLog.lastCompleted || null,
   };
 
+  // Apply API key from magic link (?key=) if present
+  if (window.MagicLink) MagicLink.apply('glowai_apikey');
   const k = localStorage.getItem('glowai_apikey');
   if (k) { state.apiKey = k; state.demoMode = false; }
 

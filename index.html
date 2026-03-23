@@ -1577,6 +1577,14 @@
           </div>
           <div class="row-action">›</div>
         </div>
+        <div class="settings-row tappable" onclick="MagicLink.copy('glowai_apikey')">
+          <div class="row-icon" style="background:rgba(196,120,138,0.15)">✨</div>
+          <div class="row-text">
+            <div class="row-title">Copy Magic Link</div>
+            <div class="row-sub">Share a link that auto-fills your API key</div>
+          </div>
+          <div class="row-action">›</div>
+        </div>
       </div>
     </div>
 
@@ -1633,6 +1641,7 @@
 <!-- ══════════════════════════════════════════════
      SCRIPTS (modules loaded in order)
 ══════════════════════════════════════════════ -->
+<script src="./magic-link.js"></script>
 <script src="./api-client.js"></script>
 <script src="./app.js"></script>
 <script src="./onboarding.js"></script>

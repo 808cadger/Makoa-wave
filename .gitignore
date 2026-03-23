@@ -28,3 +28,8 @@ Thumbs.db
 # Expo / Capacitor
 .expo/
 dist/
+
+# Build artifacts (generated at CI time — do not commit)
+www/
+android/app/src/main/assets/public/
+dist-electron/

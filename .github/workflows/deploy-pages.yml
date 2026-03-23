@@ -17,7 +17,8 @@ jobs:
       - name: Prepare www directory
         run: |
           mkdir -p www/icons
-          cp index.html manifest.json sw.js api-client.js avatar-widget.js share-widget.js www/
+          cp index.html manifest.json sw.js offline.html www/
+          cp api-client.js magic-link.js avatar-widget.js share-widget.js www/
           cp app.js onboarding.js scan.js routine.js advisor.js progress.js www/ 2>/dev/null || true
           cp icons/*.png www/icons/ 2>/dev/null || true
 

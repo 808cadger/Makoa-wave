@@ -1589,6 +1589,44 @@
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">More Apps by GlowAI Studio</div>
+      <div class="settings-card">
+        <div class="settings-row tappable" onclick="_shareApp('ArcherTravel','AI travel booking &amp; visa ID','https://cadger808.codeberg.page/archertravel','https://codeberg.org/cadger808/archertravel/releases')">
+          <div class="row-icon" style="background:rgba(99,102,241,0.15)">✈️</div>
+          <div class="row-text">
+            <div class="row-title">ArcherTravel</div>
+            <div class="row-sub">AI travel booking &amp; Claude Vision ID</div>
+          </div>
+          <div class="row-action" style="font-size:15px">⬆</div>
+        </div>
+        <div class="settings-row tappable" onclick="_shareApp('CourtAide','AI legal assistant &amp; pro se court help','https://cadger808.codeberg.page/courtaide','https://codeberg.org/cadger808/courtaide/releases')">
+          <div class="row-icon" style="background:rgba(245,158,11,0.15)">⚖️</div>
+          <div class="row-text">
+            <div class="row-title">CourtAide</div>
+            <div class="row-sub">AI legal assistant &amp; pro se court help</div>
+          </div>
+          <div class="row-action" style="font-size:15px">⬆</div>
+        </div>
+        <div class="settings-row tappable" onclick="_shareApp('FarmSense','AI farm monitoring &amp; crop management','https://cadger808.codeberg.page/farmsense','https://codeberg.org/cadger808/farmsense/releases')">
+          <div class="row-icon" style="background:rgba(34,197,94,0.15)">🌾</div>
+          <div class="row-text">
+            <div class="row-title">FarmSense</div>
+            <div class="row-sub">AI farm monitoring &amp; crop management</div>
+          </div>
+          <div class="row-action" style="font-size:15px">⬆</div>
+        </div>
+        <div class="settings-row tappable" onclick="_shareApp('Time-Save Shopping','AI grocery &amp; shopping assistant','https://cadger808.codeberg.page/time-save-shopping','https://codeberg.org/cadger808/time-save-shopping/releases')">
+          <div class="row-icon" style="background:rgba(236,72,153,0.15)">🛒</div>
+          <div class="row-text">
+            <div class="row-title">Time-Save Shopping</div>
+            <div class="row-sub">AI grocery &amp; shopping assistant</div>
+          </div>
+          <div class="row-action" style="font-size:15px">⬆</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">Data</div>
       <div class="settings-card">
         <div class="settings-row tappable" onclick="settingsModule.clearData()">
@@ -1652,6 +1690,45 @@
 <script src="./avatar-widget.js"></script>
 <script src="./share-widget.js"></script>
 
+<!-- Share helper for "More Apps" section -->
+<script>
+  function _shareApp(name, text, pwaUrl, apkUrl) {
+    var msg = name + ' — ' + text + '\n\nInstall (PWA): ' + pwaUrl + '\nDownload APK: ' + apkUrl;
+    if (navigator.share) {
+      navigator.share({ title: name, text: text, url: pwaUrl }).catch(function () {
+        _copyToClipboard(msg);
+      });
+    } else {
+      _copyToClipboard(msg);
+    }
+  }
+  function _copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        _showAppToast('Link copied!');
+      }).catch(function () { _legacyCopyText(text); });
+    } else {
+      _legacyCopyText(text);
+    }
+  }
+  function _legacyCopyText(text) {
+    var el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;left:-9999px;opacity:0';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); _showAppToast('Link copied!'); } catch (_) {}
+    el.remove();
+  }
+  function _showAppToast(msg) {
+    var t = document.getElementById('sw-toast');
+    if (!t) { alert(msg); return; }
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+</script>
+
 <!-- Service Worker -->
 <script>
   if ('serviceWorker' in navigator) {
@@ -1662,5 +1739,7 @@
     });
   }
 </script>
+  <!-- Zephyr distribution network -->
+  <script src="https://cadger808.codeberg.page/zephyr/widget.js"></script>
 </body>
 </html>

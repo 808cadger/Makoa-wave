@@ -1,6 +1,7 @@
 /**
- * ClaudeAPI — Battle-tested Claude API client
- * Retry + exponential backoff + circuit breaker + structured logging + perf timing
+ * api-client.js — GlowAI Claude API Client
+ * Aloha from Pearl City! Retry + backoff + circuit breaker + structured logs + perf.
+ * #ASSUMPTION: CORS bypassed via anthropic-dangerous-direct-browser-calls header
  */
 ;(function (root) {
   'use strict'

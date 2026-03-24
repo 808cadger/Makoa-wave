@@ -1,0 +1,51 @@
+name: Deploy GlowAI PWA
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate PWA files
+        run: |
+          for f in index.html manifest.json sw.js offline.html icons/icon-192.png icons/icon-512.png; do
+            [ -f "$f" ] || { echo "MISSING: $f"; exit 1; }
+          done
+          echo "All PWA files present ✓"
+
+      - name: Lint manifest
+        run: |
+          python3 -c "
+          import json, sys
+          m = json.load(open('manifest.json'))
+          req = ['name','short_name','start_url','scope','display','icons']
+          missing = [k for k in req if k not in m]
+          if missing: print('Missing:', missing); sys.exit(1)
+          print('manifest.json valid ✓')
+          "
+
+      - name: npm audit
+        run: npm ci && npm audit --audit-level=high || true
+
+      - name: Prepare www
+        run: |
+          mkdir -p www/icons
+          cp index.html manifest.json sw.js www/ 2>/dev/null || true
+          [ -f offline.html ] && cp offline.html www/
+          cp icons/icon-192.png icons/icon-512.png www/icons/
+          BUILD_TS=$(date -u +%Y%m%d%H%M%S)
+          sed -i "s/glowai-v[0-9]*/glowai-v${BUILD_TS}/" www/sw.js
+          echo "Built ${BUILD_TS} ✓"
+
+      - name: Deploy to Codeberg Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./www
+          publish_branch: pages
+          force_orphan: true
+          commit_message: "deploy: glowai pwa ${{ github.sha }}"

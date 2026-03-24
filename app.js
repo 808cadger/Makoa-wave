@@ -1,5 +1,6 @@
 /**
  * app.js — GlowAI Core State & App Shell
+ * Aloha from Pearl City! 🌺
  *
  * Responsibilities:
  *  - Global state object (single source of truth)
@@ -10,9 +11,13 @@
  *  - Boot sequence
  */
 
+// Perf timing — SLO target P95 < 200ms boot
+const perf = { start: performance.now() };
+
 // ═══════════════════════════════════════════════
 //  GLOBAL STATE
 // ═══════════════════════════════════════════════
+// #ASSUMPTION: localStorage is available (Capacitor WebView + Brave both support it)
 const state = {
   /** @type {{name:string,age:number|null,gender:string,skinType:string,skinTone:string,concerns:string[],lifestyle:{sleep:string,water:string,stress:string,diet:string}}|null} */
   profile: null,

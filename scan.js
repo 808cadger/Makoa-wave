@@ -1,5 +1,6 @@
 /**
  * scan.js — GlowAI Skin Scan & Results
+ * Aloha from Pearl City! 🌺
  *
  * Handles:
  *  - Photo selection (camera capture / file picker / drag-and-drop)
@@ -7,6 +8,9 @@
  *  - Parsing JSON result → results screen
  *  - Save/history management
  *  - Demo mode responses
+ *
+ * #ASSUMPTION: FileReader API available on Samsung Galaxy A9 Brave WebView
+ * #ASSUMPTION: Camera permission granted via AndroidManifest.xml before this runs
  */
 
 const scanModule = (() => {
@@ -23,8 +27,13 @@ const scanModule = (() => {
     input.onchange = e => {
       const file = e.target.files[0];
       if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = ev => setPhoto(ev.target.result);
+      reader.onerror = () => console.error('GlowAI: Failed to read image file');
       reader.readAsDataURL(file);
     };
     input.click();
@@ -259,7 +268,11 @@ Include 3-5 concerns and 3-5 recommendations. Return ONLY the JSON object.` });
     const rawText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('').trim() || '{}';
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Invalid JSON response from AI');
-    return JSON.parse(jsonMatch[0]);
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch {
+      throw new Error('Malformed JSON in AI response');
+    }
   }
 
   // ═══════════════════════════════════════════════
@@ -295,7 +308,11 @@ Return ONLY this JSON:
     const rawText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('').trim() || '{}';
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Invalid JSON response from AI');
-    return JSON.parse(jsonMatch[0]);
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch {
+      throw new Error('Malformed JSON in AI response');
+    }
   }
 
   // ═══════════════════════════════════════════════

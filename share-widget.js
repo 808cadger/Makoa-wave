@@ -108,6 +108,9 @@
 
     /* ─── Install prompt ──────────────────────────────────────── */
     var deferredPrompt = null;
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
     window.addEventListener('beforeinstallprompt', function (e) {
       e.preventDefault();
       deferredPrompt = e;
@@ -120,6 +123,18 @@
         deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
       }
     });
+
+    // iOS: show manual "Add to Home Screen" hint if not already installed
+    if (isIOS && !isStandalone) {
+      var iosBtn = document.getElementById('sw-install');
+      if (iosBtn) {
+        iosBtn.textContent = 'Add to Home Screen';
+        iosBtn.classList.add('visible');
+        iosBtn.addEventListener('click', function () {
+          showSwToast('Tap \u2191 Share → Add to Home Screen');
+        });
+      }
+    }
 
     /* ─── Toggle ──────────────────────────────────────────────── */
     fab.addEventListener('click', function (e) {

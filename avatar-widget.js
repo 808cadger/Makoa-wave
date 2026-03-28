@@ -204,6 +204,7 @@
         return;
       }
 
+      if (!res.body) { onError('No response body from AI'); return; }
       var reader = res.body.getReader();
       var decoder = new TextDecoder();
       var full = '';

@@ -6,15 +6,26 @@
 
 ---
 
+## Easiest way to get it — Zephyr
+
+**[Zephyr](https://cadger808.codeberg.page/zephyr)** is the open PWA network that distributes every app in this suite. Open Zephyr, tap GlowAI, install. Done.
+
+- No account. No sign-up. No data saved anywhere.
+- Zephyr doesn't store your usage, scans, or API key — everything stays on your device.
+- The app ships fresh every time via PWA — nothing cached on the distribution side.
+
+---
+
 ## Can anyone use this?
 
 **Yes — install in 10 seconds, no account needed.**
 
-1. Open [cadger808.codeberg.page/glowai](https://cadger808.codeberg.page/glowai) on any device
-2. Tap "Add to Home Screen" (or download the APK for Android / AppImage for Linux)
-3. Open the app → tap ⚙️ Settings → paste your [Anthropic API key](https://console.anthropic.com)
+1. Open [Zephyr](https://cadger808.codeberg.page/zephyr) → find GlowAI → tap Install
+2. Or open [cadger808.codeberg.page/glowai](https://cadger808.codeberg.page/glowai) directly on any device
+3. Tap "Add to Home Screen" (or download APK for Android / AppImage for Linux)
+4. Open the app → tap ⚙️ Settings → paste your [Anthropic API key](https://console.anthropic.com)
 
-That's it. The key is stored only on your device.
+The key is stored only on your device. Nothing leaves without you asking it to.
 
 ---
 
@@ -37,6 +48,7 @@ That's it. The key is stored only on your device.
 
 | Method | Steps |
 |--------|-------|
+| **Zephyr** | [cadger808.codeberg.page/zephyr](https://cadger808.codeberg.page/zephyr) → GlowAI → Install — zero data saved |
 | **PWA** | Open link → "Add to Home Screen" — works on Android, iOS, desktop |
 | **Android APK** | [Download](https://codeberg.org/cadger808/glowai/releases) → open file on device |
 | **ADB install** | `adb install -r app-debug.apk` |
@@ -65,6 +77,7 @@ npm run electron:dist                                  # Electron
 | AI | Claude Sonnet 4.6 (chat) · Claude Opus 4.6 (Vision scan) |
 | Mobile | Capacitor → Android APK |
 | Desktop | Electron (AppImage / RPM) |
+| Distribution | Zephyr PWA network |
 | CI | Forgejo Actions (APK + Pages + Electron) |
 
 ---

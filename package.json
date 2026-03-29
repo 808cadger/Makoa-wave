@@ -1,7 +1,7 @@
 {
   "name": "glowai",
   "version": "1.0.0",
-  "description": "GlowAI — AI Skin Analysis powered by Claude Vision",
+  "description": "GlowAI \u2014 AI Skin Analysis powered by Claude Vision",
   "main": "electron/main.js",
   "author": "Christopher Cadger <cadger808@codeberg.org>",
   "license": "UNLICENSED",
@@ -28,12 +28,14 @@
   },
   "overrides": {
     "minimatch": ">=10.2.3",
-    "tar": ">=7.5.11"
+    "tar": ">=7.5.11",
+    "picomatch": ">=4.0.2",
+    "brace-expansion": ">=2.0.1"
   },
   "build": {
     "appId": "com.cadger808.glowai",
     "productName": "GlowAI",
-    "copyright": "Copyright © 2025 Christopher Cadger",
+    "copyright": "Copyright \u00a9 2025 Christopher Cadger",
     "directories": {
       "output": "dist-electron",
       "buildResources": "icons"

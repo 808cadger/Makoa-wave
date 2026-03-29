@@ -951,17 +951,14 @@
     <div class="progress-dot"></div>
     <div class="progress-dot"></div>
     <div class="progress-dot"></div>
-    <div class="progress-dot"></div>
-    <div class="progress-dot"></div>
-    <div class="progress-dot"></div>
   </div>
   <div class="onboard-header">
-    <div class="onboard-eyebrow">Step 1 of 7</div>
-    <div class="onboard-title">Let's meet<br>you ✨</div>
-    <div class="onboard-sub">We'll personalize everything just for you.</div>
+    <div class="onboard-eyebrow">Step 1 of 4</div>
+    <div class="onboard-title">Welcome,<br>Esthetician ✨</div>
+    <div class="onboard-sub">Set up your GlowAI consultation tool in under a minute.</div>
   </div>
   <div class="onboard-body">
-    <div class="field-label">What's your name?</div>
+    <div class="field-label">Your name</div>
     <input class="field-input" id="ob-name" type="text" placeholder="e.g. Maya" autocomplete="given-name">
   </div>
   <div class="onboard-footer">
@@ -1018,17 +1015,14 @@
 <div id="onboard3" class="screen onboard-screen">
   <div class="progress-dots">
     <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
     <div class="progress-dot active"></div>
-    <div class="progress-dot"></div>
-    <div class="progress-dot"></div>
     <div class="progress-dot"></div>
     <div class="progress-dot"></div>
   </div>
   <div class="onboard-header">
-    <div class="onboard-eyebrow">Step 3 of 7</div>
-    <div class="onboard-title">Your skin<br>type</div>
-    <div class="onboard-sub">What best describes your skin on a typical day?</div>
+    <div class="onboard-eyebrow">Step 2 of 4</div>
+    <div class="onboard-title">Default<br>skin type</div>
+    <div class="onboard-sub">Your most common client skin type — you can override per scan.</div>
   </div>
   <div class="onboard-body">
     <div class="skin-type-grid" id="ob-skintype">
@@ -1061,7 +1055,7 @@
   </div>
   <div class="onboard-footer">
     <button class="btn-primary" onclick="onboarding.next(3)">Continue →</button>
-    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard2')">← Back</button>
+    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard1')">← Back</button>
   </div>
 </div>
 
@@ -1123,16 +1117,13 @@
   <div class="progress-dots">
     <div class="progress-dot done"></div>
     <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
     <div class="progress-dot active"></div>
-    <div class="progress-dot"></div>
     <div class="progress-dot"></div>
   </div>
   <div class="onboard-header">
-    <div class="onboard-eyebrow">Step 5 of 7</div>
-    <div class="onboard-title">What's bothering<br>you?</div>
-    <div class="onboard-sub">Select your skin concerns (up to 5).</div>
+    <div class="onboard-eyebrow">Step 3 of 4</div>
+    <div class="onboard-title">Common<br>concerns</div>
+    <div class="onboard-sub">Most frequent client concerns you treat (up to 5).</div>
   </div>
   <div class="onboard-body">
     <div class="chips-wrap" id="ob-concerns">
@@ -1150,7 +1141,7 @@
   </div>
   <div class="onboard-footer">
     <button class="btn-primary" onclick="onboarding.next(5)">Continue →</button>
-    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard4')">← Back</button>
+    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard3')">← Back</button>
   </div>
 </div>
 
@@ -1222,15 +1213,12 @@
     <div class="progress-dot done"></div>
     <div class="progress-dot done"></div>
     <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
-    <div class="progress-dot done"></div>
     <div class="progress-dot active"></div>
   </div>
   <div class="onboard-header">
-    <div class="onboard-eyebrow">Step 7 of 7</div>
-    <div class="onboard-title">Power it<br>up 🔑</div>
-    <div class="onboard-sub">Connect your Claude API key to unlock live AI skin analysis.</div>
+    <div class="onboard-eyebrow">Step 4 of 4</div>
+    <div class="onboard-title">Connect<br>AI 🔑</div>
+    <div class="onboard-sub">Add your Claude API key to unlock live analysis. Skip for demo mode.</div>
   </div>
   <div class="onboard-body">
     <div class="field-label">Claude API Key</div>
@@ -1245,8 +1233,8 @@
     </div>
   </div>
   <div class="onboard-footer">
-    <button class="btn-primary" onclick="onboarding.finish()">Start My Journey ✨</button>
-    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard6')">← Back</button>
+    <button class="btn-primary" onclick="onboarding.finish()">Launch GlowAI ✨</button>
+    <button class="btn-ghost" style="width:100%;margin-top:8px;text-align:center" onclick="showScreen('onboard5')">← Back</button>
   </div>
 </div>
 
@@ -1332,13 +1320,18 @@
   <div class="screen-header">
     <div class="back-btn" onclick="showScreen(window._prevScreen||'home')">‹</div>
     <div style="flex:1;padding-left:10px">
-      <div style="font-size:13px;color:var(--text-muted)">Daily Check-In</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Skin Journal</div>
+      <div style="font-size:13px;color:var(--text-muted)">Client Consultation</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">New Skin Scan</div>
     </div>
     <div class="settings-btn" onclick="showScreen('settings')">⚙️</div>
   </div>
   <div class="screen-body">
-    <div style="height:16px"></div>
+    <div style="height:12px"></div>
+
+    <!-- Client name -->
+    <input class="field-input" id="scan-client-name" type="text"
+      placeholder="Client name (optional)"
+      style="margin-bottom:14px;font-size:15px;">
 
     <!-- Tap-to-upload circle -->
     <div class="photo-upload-zone" id="scan-upload-zone" onclick="scanModule.openFilePicker()">
@@ -1354,7 +1347,7 @@
     </div>
 
     <textarea class="scan-textarea" id="scan-input"
-      placeholder="Anything to describe? (texture, tightness, breakouts, how your skin is feeling today...)"></textarea>
+      placeholder="Describe what you observe: texture, congestion, sensitivity, active breakouts, hyperpigmentation, recent treatments..."></textarea>
 
     <div class="scan-analyzing hidden" id="scan-analyzing">
       <div class="scan-analyzing-icon">🔬</div>
@@ -1362,9 +1355,9 @@
     </div>
     <div class="error-banner hidden" id="scan-error" style="margin:0 0 14px"></div>
 
-    <button class="btn-primary" id="scan-submit" onclick="scanModule.submit()">Analyze My Skin →</button>
+    <button class="btn-primary" id="scan-submit" onclick="scanModule.submit()">Generate Client Report →</button>
 
-    <div class="section-title" id="scan-history-title" style="display:none">Recent Logs</div>
+    <div class="section-title" id="scan-history-title" style="display:none">Recent Scans</div>
     <div id="scan-history-list"></div>
     <div style="height:16px"></div>
   </div>
@@ -1376,7 +1369,7 @@
 <div id="results" class="screen">
   <div class="results-header">
     <div class="back-btn" onclick="showScreen('scan')">‹</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;flex:1;padding:0 12px">Scan Results</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;flex:1;padding:0 12px">Client Report</div>
     <button class="results-save-btn" onclick="scanModule.saveResult()">Save ✓</button>
   </div>
   <div class="screen-body" style="padding-top:8px">
@@ -1416,8 +1409,8 @@
 
     <!-- Action buttons -->
     <div class="results-actions">
-      <button class="btn-primary" onclick="showScreen('routine')">Start Routine</button>
-      <button class="btn-secondary" onclick="showScreen('advisor')">Ask Advisor</button>
+      <button class="btn-primary" onclick="showScreen('advisor')">Ask AI Advisor</button>
+      <button class="btn-secondary" onclick="showScreen('scan')">New Client Scan</button>
     </div>
 
     <div style="height:24px"></div>
@@ -1441,11 +1434,11 @@
   <div id="agent-task-bar-wrap"></div>
   <div class="chat-body" id="chat-body"></div>
   <div class="starter-pills" id="starter-pills">
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">What causes my breakouts?</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Build me a routine</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Explain my last scan</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Best ingredients for my skin</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Review my progress</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">What peel suits this client's profile?</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Recommend professional treatments</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Ingredients to avoid for this skin</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Pre-treatment prep protocol</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Retail products to recommend</div>
   </div>
   <div id="advisor-error" class="error-banner hidden" style="margin:6px 14px 0"></div>
   <div class="chat-input-area">
@@ -1680,10 +1673,6 @@
   <div class="nav-item" id="nav-scan" onclick="showScreen('scan')">
     <div class="nav-icon">📷</div>
     <div class="nav-label">Scan</div>
-  </div>
-  <div class="nav-item" id="nav-routine" onclick="showScreen('routine')">
-    <div class="nav-icon">📋</div>
-    <div class="nav-label">Routine</div>
   </div>
   <div class="nav-item" id="nav-advisor" onclick="showScreen('advisor')">
     <div class="nav-icon">💬</div>

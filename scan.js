@@ -94,9 +94,11 @@ const scanModule = (() => {
       }
 
       // Persist scan entry
+      const clientName = document.getElementById('scan-client-name')?.value.trim() || '';
       const entry = {
         id:              Date.now(),
         date:            new Date().toISOString(),
+        clientName:      clientName,
         description:     desc || '(Photo scan)',
         photo:           _photoDataUrl,
         analysis:        result.summary || '',
@@ -112,6 +114,8 @@ const scanModule = (() => {
 
       // Clear form
       if (descInput) descInput.value = '';
+      const clientNameInput = document.getElementById('scan-client-name');
+      if (clientNameInput) clientNameInput.value = '';
       clearPhoto();
       renderHistory();
 
@@ -238,26 +242,28 @@ const scanModule = (() => {
     const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
     const p         = state.profile || {};
 
-    const systemPrompt = `You are GlowAI, an expert AI esthetician. Analyze skin photos scientifically and return ONLY valid JSON. No prose outside the JSON.`;
+    // #ASSUMPTION: esthetician is performing this scan on a client, not themselves
+    const clientName = document.getElementById('scan-client-name')?.value.trim() || 'the client';
+    const systemPrompt = `You are GlowAI, an expert AI esthetician assistant used by licensed skin care professionals. Analyze client skin photos with clinical precision. Use professional esthetician terminology. Return ONLY valid JSON — no prose outside the JSON.`;
     const userContent = [
       { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
     ];
     if (textDesc) userContent.push({ type: 'text', text: textDesc });
-    userContent.push({ type: 'text', text: `Analyze this person's skin thoroughly. Profile: ${p.skinType || 'unknown'} skin, tone: ${p.skinTone || 'unknown'}, concerns: ${p.concerns?.join(', ') || 'none'}.
+    userContent.push({ type: 'text', text: `Analyze this client's skin for a professional consultation. Client profile: ${p.skinType || 'unknown'} skin type, concerns: ${p.concerns?.join(', ') || 'none stated'}.
 
-Return ONLY this JSON structure:
+Return ONLY this JSON:
 {
-  "score": <0-100 overall skin health>,
-  "summary": "<2 sentence warm encouraging summary>",
+  "score": <0-100 overall skin health score>,
+  "summary": "<2 sentence clinical summary using professional esthetician language — identify skin type, key findings, and overall assessment>",
   "concerns": [
-    { "name": "<concern>", "score": <0-100 severity>, "explanation": "<2 sentence explanation>" }
+    { "name": "<clinical concern name>", "score": <0-100 severity>, "explanation": "<2 sentence professional explanation including root cause and treatment rationale>" }
   ],
   "recommendations": [
-    { "step": 1, "action": "<specific product/step>", "why": "<1 sentence science reason>" }
+    { "step": 1, "action": "<specific professional treatment or retail product recommendation>", "why": "<1 sentence clinical rationale>" }
   ]
 }
 
-Include 3-5 concerns and 3-5 recommendations. Return ONLY the JSON object.` });
+Include 3-5 concerns ranked by severity. Include 3-5 recommendations — prioritize professional treatments (chemical peels, extractions, facials, LED) over retail. Return ONLY the JSON.` });
 
     const data = await ClaudeAPI.call(state.apiKey, {
       model: 'claude-opus-4-6',
@@ -280,24 +286,25 @@ Include 3-5 concerns and 3-5 recommendations. Return ONLY the JSON object.` });
   // ═══════════════════════════════════════════════
   async function _callTextAnalysis(desc) {
     const p = state.profile || {};
-    const systemPrompt = `You are GlowAI, an expert AI esthetician. Analyze skin descriptions and return ONLY valid JSON. No prose outside JSON.`;
-    const prompt = `Analyze this skin description for a user with ${p.skinType || 'combination'} skin (tone: ${p.skinTone || 'unknown'}, concerns: ${p.concerns?.join(', ') || 'general wellness'}).
+    // #ASSUMPTION: esthetician is describing a client's skin, not their own
+    const systemPrompt = `You are GlowAI, an expert AI esthetician assistant used by licensed skin care professionals. Analyze client skin descriptions with clinical precision. Use professional esthetician terminology. Return ONLY valid JSON — no prose outside JSON.`;
+    const prompt = `Analyze this client skin description for a professional consultation. Client has ${p.skinType || 'combination'} skin, known concerns: ${p.concerns?.join(', ') || 'none stated'}.
 
-Description: "${desc}"
+Esthetician's observation: "${desc}"
 
 Return ONLY this JSON:
 {
-  "score": <0-100>,
-  "summary": "<2 sentence warm summary>",
+  "score": <0-100 overall skin health>,
+  "summary": "<2 sentence clinical summary using professional esthetician language — identify findings and overall assessment>",
   "concerns": [
-    { "name": "<concern>", "score": <0-100 severity>, "explanation": "<2 sentences>" }
+    { "name": "<clinical concern name>", "score": <0-100 severity>, "explanation": "<2 sentence professional explanation with root cause and treatment rationale>" }
   ],
   "recommendations": [
-    { "step": 1, "action": "<specific action>", "why": "<1 sentence>" }
+    { "step": 1, "action": "<specific professional treatment or product recommendation>", "why": "<1 sentence clinical rationale>" }
   ]
 }
 
-3-5 concerns, 3-5 recommendations. Return ONLY the JSON.`;
+3-5 concerns ranked by severity. 3-5 recommendations — prioritize professional treatments over retail products. Return ONLY the JSON.`;
 
     const data = await ClaudeAPI.call(state.apiKey, {
       model: 'claude-sonnet-4-6',

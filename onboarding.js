@@ -74,35 +74,20 @@ const onboarding = (() => {
           _shake('ob-name');
           return;
         }
-        // Ensure profile exists
+        // #ASSUMPTION: esthetician enters their own name here (not the client's)
         if (!state.profile) state.profile = {};
         state.profile.name = name;
-        showScreen('onboard2');
-        break;
-      }
-      case 2: {
-        // Age & gender are optional — just advance
-        if (!state.profile) state.profile = {};
-        state.profile.age    = _age;
-        state.profile.gender = _gender;
-        showScreen('onboard3');
+        showScreen('onboard3'); // skip age/gender (step 2)
         break;
       }
       case 3: {
         if (!_skinType) {
-          _shakeBanner('ob-skintype', 'Please select your skin type');
+          _shakeBanner('ob-skintype', 'Please select a default skin type');
           return;
         }
         if (!state.profile) state.profile = {};
         state.profile.skinType = _skinType;
-        showScreen('onboard4');
-        break;
-      }
-      case 4: {
-        // Tone is optional
-        if (!state.profile) state.profile = {};
-        state.profile.skinTone = _skinTone || '';
-        showScreen('onboard5');
+        showScreen('onboard5'); // skip skin tone (step 4)
         break;
       }
       case 5: {
@@ -110,17 +95,7 @@ const onboarding = (() => {
         const concerns = [...document.querySelectorAll('#ob-concerns .select-chip.selected')]
           .map(c => c.dataset.val);
         state.profile.concerns = concerns;
-        showScreen('onboard6');
-        break;
-      }
-      case 6: {
-        if (!state.profile) state.profile = {};
-        const sleep  = document.querySelector('#ob-sleep  .select-chip.selected')?.dataset.val || '';
-        const water  = document.querySelector('#ob-water  .select-chip.selected')?.dataset.val || '';
-        const stress = document.querySelector('#ob-stress .select-chip.selected')?.dataset.val || '';
-        const diet   = document.querySelector('#ob-diet   .select-chip.selected')?.dataset.val || '';
-        state.profile.lifestyle = { sleep, water, stress, diet };
-        showScreen('onboard7');
+        showScreen('onboard7'); // skip lifestyle (step 6)
         break;
       }
       default:

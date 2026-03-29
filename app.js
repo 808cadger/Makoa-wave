@@ -107,7 +107,7 @@ function loadState() {
 // ═══════════════════════════════════════════════
 //  SCREEN ROUTING
 // ═══════════════════════════════════════════════
-const NAV_SCREENS = ['home', 'scan', 'routine', 'advisor', 'progress'];
+const NAV_SCREENS = ['home', 'scan', 'advisor', 'progress'];
 
 /**
  * Navigate to a named screen. Handles CSS transition,

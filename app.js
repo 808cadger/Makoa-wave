@@ -411,9 +411,9 @@ function _renderDailyBrief() {
   const p = state.profile || { name: '', skinType: 'Combination', concerns: [] };
 
   const briefs = [
-    `Your skin is telling a story! For your ${p.skinType || 'skin'} type, today's priority is ${p.concerns?.includes('Acne & Breakouts') ? 'keeping your hands off your face and using a BHA cleanser.' : p.concerns?.includes('Dryness') ? 'layering a humectant serum before your moisturizer.' : 'consistent SPF — it\'s your #1 anti-aging step.'} Small consistent steps build beautiful skin over time.`,
-    `Skin tip for today: ${p.skinType === 'Oily' ? 'Niacinamide 10% regulates sebum and minimizes pores — apply AM and PM.' : p.skinType === 'Dry' ? 'Apply your moisturizer to slightly damp skin to lock in 3x more hydration.' : 'A gentle exfoliant 2× per week keeps your glow going without stripping your barrier.'} Keep up the amazing work!`,
-    `${state.scanHistory.length > 0 ? `Your last skin log was ${new Date(state.scanHistory[state.scanHistory.length-1].date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}. Regular tracking helps spot patterns in your skin.` : 'You haven\'t logged your skin yet today. Head to Scan and describe how your skin is feeling — even a 10-second note helps!'} Consistency is the secret ingredient. 🌸`,
+    `Clinical focus for ${p.skinType || 'your skin'} type today: ${p.concerns?.includes('Acne & Breakouts') ? 'BHA application post-cleanse to target active congestion and prevent new lesion formation.' : p.concerns?.includes('Dryness') ? 'layer humectant serum on damp skin before moisturizer to enhance hydration by up to 3×.' : 'broad-spectrum SPF 50 as the final AM step — UV is the primary driver of 80% of visible photoaging.'} Consistent protocol adherence produces measurable outcomes in 6–8 weeks.`,
+    `Clinical insight: ${p.skinType === 'Oily' ? 'Niacinamide 10% is clinically proven to reduce sebum secretion by 65% over 8 weeks — apply AM and PM without adaptation period.' : p.skinType === 'Dry' ? 'Apply moisturizer to damp skin: occlusive layering on hydrated skin locks in 3× more moisture than application on dry skin.' : 'AHA/BHA exfoliation 2× per week optimizes cell turnover without compromising the acid mantle or triggering barrier rebound.'} Evidence-based skincare produces consistent, predictable results.`,
+    `${state.scanHistory.length > 0 ? `Last client analysis logged ${new Date(state.scanHistory[state.scanHistory.length-1].date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}. Patterns emerge after 5+ consecutive scan entries — data density drives AI recommendation accuracy.` : 'No scan history recorded yet. Log your first client observation in the Scan tab. Even a brief clinical note begins building the data foundation for AI-driven insights.'} Systematic tracking is the foundation of measurable clinical outcomes.`,
   ];
 
   const briefText = briefs[Math.floor(Math.random() * briefs.length)];
@@ -424,7 +424,7 @@ function _renderDailyBrief() {
         <div class="brief-card-title">✨ Your GlowAI Daily Brief</div>
         <button class="brief-dismiss" onclick="dismissBrief()">✕</button>
       </div>
-      <div class="brief-greeting">${timeGreeting}, ${p.name || 'gorgeous'}!</div>
+      <div class="brief-greeting">${timeGreeting}, ${p.name || 'there'}.</div>
       <div class="brief-text" id="brief-text"></div>
     </div>`;
 

@@ -256,13 +256,13 @@ Be specific with real product names. Tailor to the user's skin type and concerns
       {
         step: 1, type: 'Cleanser',
         product: isOily ? 'La Roche-Posay Effaclar Gel Cleanser' : isDry ? 'CeraVe Hydrating Facial Cleanser' : 'Cetaphil Gentle Skin Cleanser',
-        instruction: 'Massage gently onto damp skin for 60 seconds. Rinse with lukewarm water. Pat dry with a clean towel.',
+        instruction: 'Apply to damp skin. Massage in upward circular motions for 60 seconds, focusing on the T-zone. Rinse thoroughly with lukewarm water. Pat dry — do not rub, as friction damages the epidermal barrier.',
         completed: false,
       },
       {
         step: 2, type: 'Toner',
         product: isSensitive ? 'Avène Thermal Spring Water Spray' : 'COSRX AHA/BHA Clarifying Treatment Toner',
-        instruction: 'Apply with fingers or cotton pad. Pat gently into skin — never rub. Allow 30 seconds to absorb.',
+        instruction: 'Apply to face and neck with a cotton pad or clean fingers. Press gently — never rub, as friction disrupts the absorption of subsequent actives. Wait 30 seconds for full penetration before applying serum.',
         completed: false,
       },
       {
@@ -280,13 +280,13 @@ Be specific with real product names. Tailor to the user's skin type and concerns
       {
         step: 5, type: 'Moisturizer',
         product: isOily ? 'Neutrogena Hydro Boost Water Gel' : isDry ? 'CeraVe Moisturizing Cream' : 'Belif The True Cream Aqua Bomb',
-        instruction: 'Apply a pea-to-nickel sized amount. Focus on any drier areas. Allow to absorb 1–2 minutes before SPF.',
+        instruction: 'Apply pea-to-nickel amount (approx. 0.5g). Focus on drier zones. Allow 90–120 seconds for full absorption before applying SPF — insufficient drying time causes SPF pilling and reduces photoprotection efficacy.',
         completed: false,
       },
       {
         step: 6, type: 'SPF',
         product: 'EltaMD UV Clear Broad-Spectrum SPF 46',
-        instruction: 'Apply generously as your final morning step. Reapply every 2 hours if outdoors. This is non-negotiable — SPF prevents 80% of visible aging.',
+        instruction: 'Apply generously (2mg/cm²) as the final AM step. Reapply every 2 hours in direct sun exposure. Broad-spectrum SPF 46+ prevents 95%+ of UVA/UVB damage — UV radiation is the primary driver of 80–90% of visible photoaging.',
         completed: false,
       },
     ];
@@ -307,15 +307,15 @@ Be specific with real product names. Tailor to the user's skin type and concerns
       {
         step: 3, type: 'Exfoliant (2×/week)',
         product: isSensitive ? 'Azelaic Acid 10% Suspension' : hasConcernAcne ? 'Paula\'s Choice 2% BHA Liquid Exfoliant' : 'The Ordinary Glycolic Acid 7% Toning Solution',
-        instruction: 'Use 2–3 nights per week only. Apply to clean dry skin. Do not use on the same night as retinol.',
+        instruction: 'Apply 2–3× per week only to clean, dry skin. Never combine with retinol on the same evening — concurrent use raises cumulative irritation risk significantly. Allow at least 48 hours between exfoliant sessions.',
         completed: false,
       },
       {
         step: 4, type: 'Treatment',
         product: isSensitive ? 'Avène Cicalfate+ Restorative Serum' : hasConcernAcne ? 'Differin Adapalene Gel 0.1%' : 'The Ordinary Retinol 0.3% in Squalane',
         instruction: isSensitive
-          ? 'Apply a thin layer to face and neck. Press gently — no rubbing.'
-          : 'Use on nights you skip the exfoliant. Apply pea-sized amount. Start 2× per week; build to nightly over 3 months.',
+          ? 'Apply a thin, even layer to face and neck. Press gently — no rubbing. Azelaic acid does not require an adaptation period and can be used nightly from day one.'
+          : 'Apply on non-exfoliant evenings only. Use a pea-sized amount. Begin at 2× weekly; increase by one session per week every 2 weeks as tolerance develops. Full retinization typically achieved in 8–12 weeks.',
         completed: false,
       },
       {

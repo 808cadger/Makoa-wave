@@ -339,11 +339,11 @@ Return ONLY this JSON:
     else if (hasPhoto) score = 71;
 
     // Concerns vary by skin type
-    const drynessConcern = { name: 'Dehydration', score: d.includes('dry') ? 72 : 35, explanation: 'Skin barrier may be compromised, leading to transepidermal water loss. Layering a humectant serum before moisturizer will significantly improve comfort.' };
-    const acneConcern    = { name: 'Acne & Breakouts', score: d.includes('breakout') || d.includes('acne') ? 68 : 28, explanation: 'Active blemish activity suggests excess sebum and C. acnes proliferation. BHA exfoliation and niacinamide will address both causes.' };
-    const oilConcern     = { name: 'Excess Sebum', score: d.includes('oily') || st === 'oily' ? 65 : 30, explanation: 'Overactive sebaceous glands are producing excess sebum, particularly in the T-zone. Niacinamide 10% is clinically proven to reduce sebum by 65% over 8 weeks.' };
-    const textureConcern = { name: 'Uneven Texture', score: 44, explanation: 'Surface cell turnover may be sluggish, leading to micro-roughness and dullness. A gentle AHA exfoliant 2× per week will smooth and brighten over 4 weeks.' };
-    const poreConcern    = { name: 'Enlarged Pores', score: st === 'oily' || st === 'combination' ? 55 : 30, explanation: 'Pores appear enlarged due to sebum accumulation and reduced skin elasticity. Regular BHA use will unclog and visually minimize pore appearance.' };
+    const drynessConcern = { name: 'Transepidermal Water Loss', score: d.includes('dry') ? 72 : 35, explanation: 'Compromised lipid barrier integrity is allowing elevated TEWL, reducing skin moisture content and resilience. Humectant layering (hyaluronic acid on damp skin) followed by an occlusive moisturizer will restore barrier function within 2–3 weeks.' };
+    const acneConcern    = { name: 'Active Acne & Congestion', score: d.includes('breakout') || d.includes('acne') ? 68 : 28, explanation: 'Active lesion activity indicates excess sebum production and C. acnes proliferation within the follicle. Salicylic acid (BHA) 2% will penetrate the pore to dissolve sebum plugs; niacinamide 10% will suppress the inflammatory response concurrently.' };
+    const oilConcern     = { name: 'Sebaceous Hyperactivity', score: d.includes('oily') || st === 'oily' ? 65 : 30, explanation: 'Overactive sebaceous glands are generating excess sebum output, particularly in the T-zone. Niacinamide 10% is clinically demonstrated to reduce sebum secretion by 65% over 8 weeks through follicular receptor modulation.' };
+    const textureConcern = { name: 'Impaired Surface Texture', score: 44, explanation: 'Reduced epidermal cell turnover rate is producing micro-roughness and surface dullness. Glycolic acid (AHA) 7–10% applied 2× weekly will accelerate desquamation, revealing smoother, more luminous skin within 4 weeks.' };
+    const poreConcern    = { name: 'Dilated Follicular Ostia', score: st === 'oily' || st === 'combination' ? 55 : 30, explanation: 'Pore dilation is secondary to sebum accumulation and progressive loss of perifollicular elastin. Consistent BHA exfoliation will remove intra-follicular debris, while retinoids will restore surrounding collagen and elastin tone over 12 weeks.' };
 
     const concerns = [drynessConcern, acneConcern, textureConcern, poreConcern, oilConcern]
       .sort((a, b) => b.score - a.score)
@@ -352,33 +352,33 @@ Return ONLY this JSON:
     // Recommendations
     const cleanserRec = {
       step: 1,
-      action: st === 'oily' ? 'La Roche-Posay Effaclar Gel Cleanser — 60-second AM/PM cleanse' : 'CeraVe Hydrating Facial Cleanser — gentle 60-second cleanse',
-      why: 'pH-balanced cleansing removes debris without stripping the barrier, preventing rebound oil production.',
+      action: st === 'oily' ? 'La Roche-Posay Effaclar Purifying Foaming Gel — 60-second AM/PM cleanse' : 'CeraVe Hydrating Facial Cleanser — gentle 60-second cleanse, AM/PM',
+      why: 'pH 5.5-balanced cleansing preserves the acid mantle while removing sebum, SPF, and environmental debris. Eliminates barrier disruption and prevents compensatory sebum rebound.',
     };
     const serumRec = {
       step: 2,
-      action: p.concerns?.includes('Dark Spots') ? 'Vitamin C serum 15% (L-ascorbic acid) — apply AM on damp skin' : 'Niacinamide 10% + Zinc 1% serum — apply AM and PM',
-      why: 'Niacinamide regulates sebum, reduces redness, and minimizes pores — your all-in-one treatment active.',
+      action: p.concerns?.includes('Dark Spots') ? 'SkinCeuticals C E Ferulic (L-Ascorbic Acid 15%) — apply AM on clean damp skin before SPF' : 'The Ordinary Niacinamide 10% + Zinc 1% — apply AM and PM after toner',
+      why: p.concerns?.includes('Dark Spots') ? 'L-Ascorbic Acid 15% with Ferulic Acid provides 8× enhanced photoprotection, inhibits tyrosinase-mediated melanin synthesis, and upregulates Type I collagen expression.' : 'Niacinamide 10% is clinically proven to reduce sebum secretion by 65%, suppress inflammatory cytokines, and stimulate ceramide synthesis for barrier repair — the most efficient multi-tasking treatment active.',
     };
     const moisturiserRec = {
       step: 3,
-      action: st === 'oily' ? 'Neutrogena Hydro Boost Water Gel — pea-sized amount AM/PM' : 'CeraVe Moisturizing Cream — apply on slightly damp skin',
-      why: 'Ceramide-rich moisturizers repair and reinforce the lipid barrier, reducing water loss and improving skin comfort.',
+      action: st === 'oily' ? 'Neutrogena Hydro Boost Water Gel — apply pea-sized amount to damp skin AM/PM' : 'CeraVe Moisturizing Cream (ceramide complex) — apply to damp skin AM/PM',
+      why: 'Ceramide-dominant formulation restores the lipid bilayer, reduces transepidermal water loss by up to 40%, and seals in active ingredients. Damp-skin application enhances absorption by 3×.',
     };
     const spfRec = {
       step: 4,
-      action: 'EltaMD UV Clear SPF 46 — generous application every morning, reapply every 2 hours outdoors',
-      why: 'SPF is your single most impactful anti-aging step — UV is responsible for 80% of visible aging.',
+      action: 'EltaMD UV Clear Broad-Spectrum SPF 46 — apply 2mg/cm² as final AM step; reapply every 2 hours in direct sun',
+      why: 'Broad-spectrum UVA/UVB protection prevents 95%+ of photoaging damage. UV radiation drives 80–90% of visible aging signs including fine lines, hyperpigmentation, and collagen degradation.',
     };
     const treatmentRec = {
       step: 5,
-      action: d.includes('acne') || d.includes('breakout') ? 'Paula\'s Choice 2% BHA Liquid Exfoliant — 3× per week PM' : 'The Ordinary Retinol 0.3% — start 2× per week PM, avoid eyes',
-      why: d.includes('acne') || d.includes('breakout') ? 'Salicylic acid penetrates and dissolves sebum plugs from inside the pore, preventing future breakouts.' : 'Retinol accelerates cell turnover and stimulates collagen synthesis — the gold standard for texture and aging.',
+      action: d.includes('acne') || d.includes('breakout') ? 'Paula\'s Choice 2% BHA Liquid Exfoliant — apply 3× per week PM after cleansing, leave-on' : 'The Ordinary Retinol 0.3% in Squalane — 2× per week PM; avoid periorbital area',
+      why: d.includes('acne') || d.includes('breakout') ? 'Salicylic acid (lipid-soluble BHA) penetrates the follicle to dissolve sebum plugs, suppress C. acnes proliferation, and reduce post-inflammatory hyperpigmentation risk.' : 'Retinol upregulates epidermal cell turnover and stimulates dermal collagen synthesis. Begin at 2× weekly; increase by one session every 2 weeks as tolerance develops. Full retinization typically achieved in 8–12 weeks.',
     };
 
     const summary = hasPhoto
-      ? `Your skin looks ${score >= 75 ? 'healthy and vibrant' : score >= 55 ? 'balanced with some areas to address' : 'like it needs a little extra care right now'} — and that's completely normal. ${score >= 70 ? 'You\'re doing a great job.' : 'Small targeted changes in your routine will make a big difference.'} Let's keep you glowing! 🌸`
-      : `Based on your description, your ${p.skinType || 'skin'} is ${score >= 75 ? 'doing great with just a few areas to watch' : score >= 55 ? 'in good shape with some targeted needs' : 'telling you it needs a bit more TLC right now'}. The recommendations below will help you make the most progress in the shortest time.`;
+      ? `Visual assessment indicates ${score >= 75 ? 'good overall skin health with minor optimization opportunities' : score >= 55 ? 'moderate condition with several addressable concerns' : 'active concerns requiring targeted clinical intervention'}. ${score >= 70 ? 'Current protocol is producing positive outcomes.' : 'Targeted protocol adjustments will produce measurable improvement within 6–8 weeks.'} Full clinical recommendations are detailed below.`
+      : `Clinical assessment based on esthetician observation: ${p.skinType || 'combination'} skin presentation with ${score >= 75 ? 'strong overall condition and minor maintenance needs' : score >= 55 ? 'moderate concerns requiring targeted treatment actives' : 'active concerns requiring structured clinical intervention'}. Evidence-based treatment recommendations below are sequenced by clinical priority.`;
 
     return {
       score,

@@ -954,8 +954,8 @@
   </div>
   <div class="onboard-header">
     <div class="onboard-eyebrow">Step 1 of 4</div>
-    <div class="onboard-title">Welcome,<br>Esthetician ✨</div>
-    <div class="onboard-sub">Set up your GlowAI consultation tool in under a minute.</div>
+    <div class="onboard-title">Welcome to<br>GlowAI Pro</div>
+    <div class="onboard-sub">Your AI-powered client skin analysis and professional treatment platform. Set up in 60 seconds.</div>
   </div>
   <div class="onboard-body">
     <div class="field-label">Your name</div>
@@ -1217,8 +1217,8 @@
   </div>
   <div class="onboard-header">
     <div class="onboard-eyebrow">Step 4 of 4</div>
-    <div class="onboard-title">Connect<br>AI 🔑</div>
-    <div class="onboard-sub">Add your Claude API key to unlock live analysis. Skip for demo mode.</div>
+    <div class="onboard-title">Unlock Live<br>AI Analysis</div>
+    <div class="onboard-sub">Add your Claude API key to activate live Claude Vision skin analysis. Demo mode is available now — add your key anytime in Settings.</div>
   </div>
   <div class="onboard-body">
     <div class="field-label">Claude API Key</div>
@@ -1263,7 +1263,7 @@
       <div class="scan-hero-ripple scan-hero-ripple2"></div>
       <div class="scan-hero-icon">📸</div>
       <div class="scan-hero-title">Scan My Skin</div>
-      <div class="scan-hero-sub">AI face analysis · takes 10 seconds</div>
+      <div class="scan-hero-sub">Claude Vision skin analysis · clinical insights in seconds</div>
       <div class="scan-hero-btn">Scan Now →</div>
     </div>
 
@@ -1355,7 +1355,7 @@
     </div>
     <div class="error-banner hidden" id="scan-error" style="margin:0 0 14px"></div>
 
-    <button class="btn-primary" id="scan-submit" onclick="scanModule.submit()">Generate Client Report →</button>
+    <button class="btn-primary" id="scan-submit" onclick="scanModule.submit()">Analyze & Generate Report</button>
 
     <div id="scan-history-header" style="display:none;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:10px">
       <div class="section-title" style="margin:0">Client History</div>
@@ -1439,15 +1439,15 @@
   <div id="agent-task-bar-wrap"></div>
   <div class="chat-body" id="chat-body"></div>
   <div class="starter-pills" id="starter-pills">
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">What peel suits this client's profile?</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Recommend professional treatments</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Ingredients to avoid for this skin</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Pre-treatment prep protocol</div>
-    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Retail products to recommend</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Which professional peel would you recommend?</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Suggest clinical-grade treatments for this skin</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Which actives should I avoid combining?</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Pre-treatment skin prep guide</div>
+    <div class="starter-pill" onclick="advisorModule.sendStarter(this)">Best retail recommendations for this client</div>
   </div>
   <div id="advisor-error" class="error-banner hidden" style="margin:6px 14px 0"></div>
   <div class="chat-input-area">
-    <textarea class="chat-input" id="chat-input" placeholder="Ask your esthetician..." rows="1"
+    <textarea class="chat-input" id="chat-input" placeholder="Ask GlowAI..." rows="1"
       onkeydown="advisorModule.chatKeyDown(event)"
       oninput="advisorModule.autoResize(this)"></textarea>
     <button class="chat-send" id="chat-send" onclick="advisorModule.send()">↑</button>
@@ -1462,7 +1462,7 @@
     <div class="back-btn" onclick="showScreen(window._prevScreen||'home')">‹</div>
     <div style="flex:1;padding-left:10px">
       <div style="font-size:13px;color:var(--text-muted)">Daily Routine</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">My Routine</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Client Routine</div>
     </div>
     <div id="routine-streak-badge"
       style="font-size:13px;font-weight:700;color:var(--accent);background:rgba(196,120,138,0.12);padding:6px 12px;border-radius:50px;border:1px solid rgba(196,120,138,0.25)">

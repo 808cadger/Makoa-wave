@@ -72,7 +72,9 @@ function saveState() {
     if (state.profilePhoto) localStorage.setItem('glowai_profilephoto', state.profilePhoto);
     if (state.lastBriefDate) localStorage.setItem('glowai_brief_date',  state.lastBriefDate);
     localStorage.setItem('glowai_onboarded', state.profile ? '1' : '0');
-  } catch(e) { /* storage full — silently ignore */ }
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') showToast('Storage full — some history may not have saved.');
+  }
 }
 
 function loadState() {
@@ -585,9 +587,16 @@ function setStatus(msg) {
 //  TOAST
 // ═══════════════════════════════════════════════
 function showToast(msg, durationMs = 3000) {
+  // Deduplicate — don't stack same message
+  const existing = [...document.querySelectorAll('.glow-toast')];
+  if (existing.some(t => t.textContent === msg)) return;
+  // Cap at 2 — remove oldest if needed
+  if (existing.length >= 2) existing[0].remove();
+  const offset = document.querySelectorAll('.glow-toast').length * 52;
   const t = document.createElement('div');
+  t.className = 'glow-toast';
   t.style.cssText = [
-    'position:fixed', 'bottom:calc(var(--safe-bottom) + 24px)',
+    'position:fixed', `bottom:calc(var(--safe-bottom,0px) + ${24 + offset}px)`,
     'left:50%', 'transform:translateX(-50%)',
     'background:var(--card)', 'border:1px solid var(--border)',
     'color:var(--text)', 'padding:11px 18px',
@@ -670,6 +679,8 @@ const settingsModule = (() => {
     // Demo banner
     const demoBanner = document.getElementById('demo-banner');
     if (demoBanner) demoBanner.classList.toggle('hidden', !state.demoMode);
+
+    _injectEditBtn();
   }
 
   function handleApiKeyInput() {
@@ -729,7 +740,71 @@ const settingsModule = (() => {
     resetApp();
   }
 
-  return { render, handleApiKeyInput, toggleKeyVis, captureProfilePhoto, clearData };
+  function _injectEditBtn() {
+    if (document.getElementById('settings-edit-profile-btn')) return;
+    const section = document.getElementById('s-lifestyle-row')?.closest('.settings-card');
+    if (!section) return;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'padding:4px 12px 12px';
+    wrap.innerHTML = `<button id="settings-edit-profile-btn" onclick="settingsModule.editProfile()"
+      class="btn-secondary" style="width:100%;margin-top:4px">✏️ Edit Profile</button>`;
+    section.appendChild(wrap);
+  }
+
+  function editProfile() {
+    const p = state.profile;
+    if (!p) return;
+    const skinTypes   = ['Oily', 'Dry', 'Combination', 'Normal', 'Sensitive'];
+    const allConcerns = ['Acne & Breakouts','Dryness','Dark Spots','Oily Skin','Redness','Uneven Texture','Fine Lines','Large Pores','Sensitivity','Dullness'];
+
+    const overlay = document.createElement('div');
+    overlay.id = 'edit-profile-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(6px);z-index:300;display:flex;flex-direction:column;animation:fadeIn 0.25s ease;overflow-y:auto';
+    overlay.innerHTML = `
+      <div style="padding:calc(var(--safe-top,0px)+16px) 20px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Edit Profile</div>
+        <button onclick="document.getElementById('edit-profile-overlay').remove()"
+          style="width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,0.1);color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div style="flex:1;padding:0 20px calc(40px + var(--safe-bottom,0px));display:flex;flex-direction:column;gap:22px">
+        <div>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--primary);display:block;margin-bottom:8px">Name</label>
+          <input id="edit-name" value="${escHtml(p.name || '')}"
+            style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:15px;box-sizing:border-box;outline:none"
+            placeholder="Your name">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--primary);display:block;margin-bottom:10px">Skin Type</label>
+          <div id="edit-skintype" style="display:flex;flex-wrap:wrap;gap:8px">
+            ${skinTypes.map(st => `<button onclick="document.getElementById('edit-skintype').querySelectorAll('button').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')" class="select-chip ${p.skinType === st ? 'selected' : ''}" data-type="${st}">${st}</button>`).join('')}
+          </div>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--primary);display:block;margin-bottom:10px">Concerns <span style="color:var(--text-muted);font-weight:400;font-size:10px">(tap to toggle)</span></label>
+          <div id="edit-concerns" style="display:flex;flex-wrap:wrap;gap:8px">
+            ${allConcerns.map(c => `<button onclick="this.classList.toggle('selected')" class="select-chip ${p.concerns?.includes(c) ? 'selected' : ''}" data-val="${c}">${c}</button>`).join('')}
+          </div>
+        </div>
+        <button onclick="settingsModule._saveEditProfile()" class="btn-primary" style="margin-top:4px">Save Changes</button>
+      </div>`;
+    document.body.appendChild(overlay);
+  }
+
+  function _saveEditProfile() {
+    const overlay = document.getElementById('edit-profile-overlay');
+    if (!overlay) return;
+    const name = overlay.querySelector('#edit-name')?.value.trim();
+    if (!name) { showToast('Please enter your name'); return; }
+    const skinTypeBtn = [...overlay.querySelectorAll('#edit-skintype button')].find(b => b.classList.contains('selected'));
+    const concerns    = [...overlay.querySelectorAll('#edit-concerns button.selected')].map(b => b.dataset.val);
+    state.profile = { ...state.profile, name, skinType: skinTypeBtn?.dataset.type || state.profile?.skinType, concerns };
+    saveState();
+    overlay.remove();
+    render();
+    showToast('Profile updated ✨');
+  }
+
+  return { render, handleApiKeyInput, toggleKeyVis, captureProfilePhoto, clearData, editProfile, _saveEditProfile, _injectEditBtn };
 })();
 
 // ═══════════════════════════════════════════════
@@ -786,10 +861,34 @@ function initNavDrag() {
 // ═══════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════
+function _initOfflineBanner() {
+  const banner = document.createElement('div');
+  banner.id = 'offline-banner';
+  banner.style.cssText = [
+    'position:fixed', 'top:calc(var(--safe-top,0px) + 8px)', 'left:50%',
+    'transform:translateX(-50%)', 'background:#2a1a1a', 'border:1px solid #5c2c2c',
+    'color:#FCA5A5', 'padding:8px 18px', 'border-radius:50px',
+    'font-size:12px', 'font-weight:700', 'z-index:9999',
+    'display:none', 'white-space:nowrap', 'letter-spacing:0.3px',
+  ].join(';');
+  banner.textContent = '⚡ No internet connection';
+  document.body.appendChild(banner);
+
+  const update = () => {
+    banner.style.display = navigator.onLine ? 'none' : 'block';
+    if (navigator.onLine && banner._wasOffline) showToast('Back online ✨');
+    banner._wasOffline = !navigator.onLine;
+  };
+  window.addEventListener('online',  update);
+  window.addEventListener('offline', update);
+  update();
+}
+
 function initApp() {
   loadState();
   showScreen('splash');
   initNavDrag();
+  _initOfflineBanner();
 
   setTimeout(() => {
     if (state.profile) {

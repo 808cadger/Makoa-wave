@@ -334,12 +334,67 @@ Use 2-4 tools per response. Never give generic advice — base everything on the
   }
 
   function _processToolResult(toolName, input) {
+    const p = state.profile || {};
     switch (toolName) {
-      case 'analyze_skin_profile': return { success: true, skin_type: input.skin_type || 'unknown', concerns: input.concerns || [], status: 'Skin profile analyzed.' };
-      case 'recommend_products':   return { success: true, skin_type: input.skin_type, concerns: input.concerns, status: 'Product recommendations ready.' };
-      case 'build_routine':        return { success: true, skin_type: input.skin_type, concerns: input.concerns, status: 'Routine structure built.' };
-      case 'explain_ingredient':   return { success: true, ingredient: input.ingredient, skin_type: input.skin_type || 'all', status: 'Ingredient data retrieved.' };
-      case 'track_skin_progress':  return { success: true, entries_analyzed: (input.history || []).length, weeks: input.weeks || 4, status: 'Progress trends calculated.' };
+      case 'analyze_skin_profile':
+        return {
+          success:        true,
+          skin_type:      p.skinType || input.skin_type || 'unknown',
+          concerns:       p.concerns || input.concerns || [],
+          age:            p.age || null,
+          lifestyle:      p.lifestyle || null,
+          scan_count:     state.scanHistory.length,
+          last_scan_date: state.scanHistory.length ? state.scanHistory[state.scanHistory.length - 1].date : null,
+          status:         'Skin profile analyzed from client record.',
+        };
+      case 'recommend_products':
+        return {
+          success:              true,
+          skin_type:            p.skinType || input.skin_type,
+          concerns:             p.concerns || input.concerns,
+          lifestyle:            p.lifestyle || null,
+          scan_history_summary: state.scanHistory.slice(-3).map(s => ({
+            date: s.date, score: s.score, top_concern: s.concerns?.[0]?.name,
+          })),
+          status: 'Product recommendations generated from client profile.',
+        };
+      case 'build_routine':
+        return {
+          success:       true,
+          skin_type:     p.skinType || input.skin_type,
+          concerns:      p.concerns || input.concerns,
+          routine_steps: {
+            am: state.routine.am.map(s => ({ step: s.step, type: s.type, product: s.product })),
+            pm: state.routine.pm.map(s => ({ step: s.step, type: s.type, product: s.product })),
+          },
+          status: 'Routine built and saved to Routine tab.',
+        };
+      case 'explain_ingredient':
+        return {
+          success:                 true,
+          ingredient:              input.ingredient,
+          skin_type_compatibility: p.skinType || input.skin_type || 'all',
+          known_concerns:          p.concerns || [],
+          status:                  'Ingredient data retrieved.',
+        };
+      case 'track_skin_progress': {
+        const weeks   = input.weeks || 4;
+        const history = state.scanHistory.slice(-(weeks * 7));
+        const scores  = history.map(s => s.score).filter(Boolean);
+        return {
+          success:          true,
+          entries_analyzed: history.length,
+          weeks,
+          avg_score:        scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null,
+          score_trend:      scores.length >= 2
+            ? (scores[scores.length - 1] > scores[0] ? 'improving'
+              : scores[scores.length - 1] < scores[0] ? 'declining' : 'stable')
+            : 'insufficient_data',
+          recent_concerns:  [...new Set(history.flatMap(s => (s.concerns || []).map(c => c.name)))].slice(0, 5),
+          routine_streak:   state.routine.streak || 0,
+          status:           'Progress trends calculated from scan history.',
+        };
+      }
       default: return { success: true, status: 'Tool executed.' };
     }
   }

@@ -94,11 +94,11 @@ const scanModule = (() => {
       }
 
       // Persist scan entry
-      const clientName = document.getElementById('scan-client-name')?.value.trim() || '';
+      const clientName = document.getElementById('scan-client-name')?.value.trim() || 'Client';
       const entry = {
         id:              Date.now(),
         date:            new Date().toISOString(),
-        clientName:      clientName,
+        clientName,
         description:     desc || '(Photo scan)',
         photo:           _photoDataUrl,
         analysis:        result.summary || '',

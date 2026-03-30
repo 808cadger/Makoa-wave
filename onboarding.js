@@ -70,32 +70,53 @@ const onboarding = (() => {
     switch (step) {
       case 1: {
         const name = document.getElementById('ob-name')?.value.trim();
-        if (!name) {
-          _shake('ob-name');
-          return;
-        }
+        if (!name) { _shake('ob-name'); return; }
         // #ASSUMPTION: esthetician enters their own name here (not the client's)
         if (!state.profile) state.profile = {};
         state.profile.name = name;
-        showScreen('onboard3'); // skip age/gender (step 2)
+        showScreen('onboard2');
+        break;
+      }
+      case 2: {
+        if (!state.profile) state.profile = {};
+        state.profile.age    = _age;
+        state.profile.gender = _gender;
+        showScreen('onboard3');
         break;
       }
       case 3: {
         if (!_skinType) {
-          _shakeBanner('ob-skintype', 'Please select a default skin type');
+          _shakeBanner('ob-skintype', 'Please select a skin type');
           return;
         }
         if (!state.profile) state.profile = {};
         state.profile.skinType = _skinType;
-        showScreen('onboard5'); // skip skin tone (step 4)
+        showScreen('onboard4');
+        break;
+      }
+      case 4: {
+        if (!state.profile) state.profile = {};
+        if (_skinTone) state.profile.skinTone = _skinTone;
+        showScreen('onboard5');
         break;
       }
       case 5: {
         if (!state.profile) state.profile = {};
-        const concerns = [...document.querySelectorAll('#ob-concerns .select-chip.selected')]
+        state.profile.concerns = [...document.querySelectorAll('#ob-concerns .select-chip.selected')]
           .map(c => c.dataset.val);
-        state.profile.concerns = concerns;
-        showScreen('onboard7'); // skip lifestyle (step 6)
+        showScreen('onboard6');
+        break;
+      }
+      case 6: {
+        if (!state.profile) state.profile = {};
+        const getChip = id => document.querySelector(`#${id} .select-chip.selected`)?.dataset.val || '';
+        state.profile.lifestyle = {
+          sleep:  getChip('ob-lifestyle-sleep'),
+          water:  getChip('ob-lifestyle-water'),
+          stress: getChip('ob-lifestyle-stress'),
+          diet:   getChip('ob-lifestyle-diet'),
+        };
+        showScreen('onboard7');
         break;
       }
       default:
@@ -118,12 +139,11 @@ const onboarding = (() => {
       return;
     }
 
-    // Mark onboarded
+    // Mark onboarded — clear any prior session's chat so advisor starts fresh
+    state.chatHistory   = [];
+    state.advisorOpened = false;
     localStorage.setItem('glowai_onboarded', '1');
     saveState();
-
-    // Kick off advisor intake on first open
-    state.advisorOpened = false;
 
     showScreen('home');
   }

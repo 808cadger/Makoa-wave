@@ -476,10 +476,16 @@ const progressModule = (() => {
     const overlay = document.createElement('div');
     overlay.id = 'scan-detail-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:300;display:flex;flex-direction:column;animation:fadeIn 0.25s ease';
+    const _closeOverlay = () => {
+      overlay.style.transition = 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.4,0,1,1)';
+      overlay.style.opacity    = '0';
+      overlay.style.transform  = 'translateY(18px)';
+      setTimeout(() => overlay.remove(), 230);
+    };
     overlay.innerHTML = `
       <div style="padding:calc(var(--safe-top,0px) + 16px) 20px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
         <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.85)">${date}</div>
-        <button onclick="document.getElementById('scan-detail-overlay').remove()"
+        <button id="scan-detail-close-x"
           style="width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,0.1);color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
       ${s.photo ? `<img src="${s.photo}" style="width:100%;max-height:45vh;object-fit:contain;flex-shrink:0">` : ''}
@@ -492,9 +498,11 @@ const progressModule = (() => {
       </div>
       <div style="padding:12px 20px;padding-bottom:calc(12px + var(--safe-bottom,0px));border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0">
         <button class="btn-secondary" style="flex:1" onclick="progressModule.deleteScanFromDetail(${idx})">Delete</button>
-        <button class="btn-primary" style="flex:2" onclick="document.getElementById('scan-detail-overlay').remove()">Close</button>
+        <button class="btn-primary" style="flex:2" id="scan-detail-close-btn">Close</button>
       </div>`;
     document.body.appendChild(overlay);
+    document.getElementById('scan-detail-close-x')?.addEventListener('click', _closeOverlay);
+    document.getElementById('scan-detail-close-btn')?.addEventListener('click', _closeOverlay);
   }
 
   // ─── Delete scan ────────────────────────────
@@ -506,8 +514,14 @@ const progressModule = (() => {
 
   function deleteScanFromDetail(idx) {
     if (!confirm('Delete this scan? This cannot be undone.')) return;
-    document.getElementById('scan-detail-overlay')?.remove();
-    _doDelete(idx);
+    const ov = document.getElementById('scan-detail-overlay');
+    if (ov) {
+      ov.style.transition = 'opacity 0.22s ease';
+      ov.style.opacity    = '0';
+      setTimeout(() => { ov.remove(); _doDelete(idx); }, 230);
+    } else {
+      _doDelete(idx);
+    }
   }
 
   function _doDelete(idx) {

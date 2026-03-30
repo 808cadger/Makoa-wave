@@ -392,25 +392,40 @@ Return ONLY this JSON:
   //  HISTORY RENDERING (on scan tab)
   // ═══════════════════════════════════════════════
   function renderHistory() {
-    const list  = document.getElementById('scan-history-list');
-    const title = document.getElementById('scan-history-title');
+    const list   = document.getElementById('scan-history-list');
+    const header = document.getElementById('scan-history-header');
     if (!list) return;
 
     if (!state.scanHistory.length) {
       list.innerHTML = '';
-      if (title) title.style.display = 'none';
+      if (header) header.style.display = 'none';
       return;
     }
-    if (title) title.style.display = '';
+    if (header) header.style.display = 'flex';
 
-    const recent = [...state.scanHistory].reverse().slice(0, 8);
-    list.innerHTML = recent.map(s => {
+    // #ASSUMPTION: filter input value is always a plain string (no regex injection risk — used as substring match only)
+    const filterRaw = (document.getElementById('scan-client-filter')?.value || '').trim().toLowerCase();
+    const all = [...state.scanHistory].reverse();
+    const filtered = filterRaw
+      ? all.filter(s => (s.clientName || '').toLowerCase().includes(filterRaw))
+      : all.slice(0, 12);
+
+    if (!filtered.length) {
+      list.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:10px 4px">No scans match "${escHtml(filterRaw)}"</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(s => {
       const date    = new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       const preview = (s.description || '(Photo scan)').slice(0, 50) + ((s.description || '').length > 50 ? '…' : '');
+      const nameTag = s.clientName
+        ? `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:var(--primary);margin-bottom:2px">${escHtml(s.clientName)}</div>`
+        : '';
       return `
         <div class="scan-history-item">
           <div class="scan-history-header" onclick="_scanToggle(this, '${s.id}')">
-            <div>
+            <div style="flex:1;min-width:0">
+              ${nameTag}
               <div class="scan-history-date">${date}${s.score ? ` · Score ${s.score}` : ''}</div>
               <div class="scan-history-preview">${escHtml(preview)}</div>
             </div>

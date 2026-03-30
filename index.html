@@ -1357,7 +1357,12 @@
 
     <button class="btn-primary" id="scan-submit" onclick="scanModule.submit()">Generate Client Report →</button>
 
-    <div class="section-title" id="scan-history-title" style="display:none">Recent Scans</div>
+    <div id="scan-history-header" style="display:none;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:10px">
+      <div class="section-title" style="margin:0">Client History</div>
+      <input id="scan-client-filter" type="text" placeholder="Filter by name…"
+        oninput="scanModule.renderHistory()"
+        style="font-size:13px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);outline:none;width:46%">
+    </div>
     <div id="scan-history-list"></div>
     <div style="height:16px"></div>
   </div>

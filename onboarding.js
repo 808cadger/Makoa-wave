@@ -132,13 +132,6 @@ const onboarding = (() => {
     if (keyVal) {
       saveApiKey(keyVal);
     }
-    // Profile must at minimum have a name by now
-    if (!state.profile?.name) {
-      showToast('Please go back and enter your name.');
-      showScreen('onboard1');
-      return;
-    }
-
     // Mark onboarded — clear any prior session's chat so advisor starts fresh
     state.chatHistory   = [];
     state.advisorOpened = false;

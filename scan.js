@@ -27,20 +27,24 @@ const glowScan = (() => {
     const img   = document.getElementById('scan-photo');
     const ph    = document.getElementById('scan-placeholder');
     const btn   = document.getElementById('float-analyze');
+    const ring  = document.getElementById('ring-light');
     img.src     = dataUrl;
     img.style.display = 'block';
-    if (ph)  ph.style.display  = 'none';
-    if (btn) btn.classList.add('show');
+    if (ph)   ph.style.display  = 'none';
+    if (btn)  btn.classList.add('show');
+    if (ring) ring.classList.add('active');
   }
 
   function clearPhoto() {
     _photo = null;
-    const img = document.getElementById('scan-photo');
-    const ph  = document.getElementById('scan-placeholder');
-    const btn = document.getElementById('float-analyze');
+    const img  = document.getElementById('scan-photo');
+    const ph   = document.getElementById('scan-placeholder');
+    const btn  = document.getElementById('float-analyze');
+    const ring = document.getElementById('ring-light');
     img.src = ''; img.style.display = 'none';
-    if (ph)  ph.style.display  = 'flex';
-    if (btn) btn.classList.remove('show');
+    if (ph)   ph.style.display  = 'flex';
+    if (btn)  btn.classList.remove('show');
+    if (ring) ring.classList.remove('active');
   }
 
   // ── Analyze ──────────────────────────────────────────

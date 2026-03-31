@@ -35,6 +35,10 @@
         inset 0 0 55px 28px rgba(255,255,255,0.93),
         inset 0 0 110px 55px rgba(255,255,255,0.46),
         inset 0 0 200px 90px rgba(255,230,210,0.14);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    #ring-light.active {
       animation: ringPulse 4s ease-in-out infinite;
     }
     @keyframes ringPulse {
@@ -263,7 +267,7 @@
     <img id="scan-photo" src="" alt="">
   </div>
 
-  <input type="file" id="scan-file" accept="image/*" style="display:none" onchange="glowScan.onFileChange(event)">
+  <input type="file" id="scan-file" accept="image/*" capture="user" style="display:none" onchange="glowScan.onFileChange(event)">
 
   <!-- Floating icons — all draggable -->
   <div class="float-icon"      id="float-camera"   data-key="float-camera">📷</div>

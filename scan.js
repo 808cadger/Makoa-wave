@@ -3,14 +3,61 @@
 
 const glowScan = (() => {
   let _photo = null;
+  let _stream = null;
 
   // ── Photo ────────────────────────────────────────────
   function tapZone() {
-    if (!_photo) openCamera();
+    if (!_photo && !_stream) openCamera();
+    else if (_stream) captureVideo();
   }
 
-  function openCamera() {
-    document.getElementById('scan-file').click();
+  async function openCamera() {
+    // #ASSUMPTION: getUserMedia available on https:// or localhost; fall back to file input otherwise
+    if (!navigator.mediaDevices?.getUserMedia) {
+      document.getElementById('scan-file').click();
+      return;
+    }
+    try {
+      _stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+      const vid = document.getElementById('scan-video');
+      vid.srcObject = _stream;
+      vid.style.display = 'block';
+      document.getElementById('scan-placeholder').style.display = 'none';
+      document.getElementById('cam-capture-btn').style.display = 'block';
+      document.getElementById('cam-cancel-btn').style.display  = 'block';
+    } catch (err) {
+      // Permission denied or no camera — fall back to file picker
+      _stream = null;
+      document.getElementById('scan-file').click();
+    }
+  }
+
+  function captureVideo() {
+    const vid    = document.getElementById('scan-video');
+    const canvas = document.getElementById('scan-canvas');
+    canvas.width  = vid.videoWidth  || 640;
+    canvas.height = vid.videoHeight || 480;
+    canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    stopCamera();
+    setPhoto(dataUrl);
+  }
+
+  function stopCamera() {
+    if (_stream) {
+      _stream.getTracks().forEach(t => t.stop());
+      _stream = null;
+    }
+    const vid = document.getElementById('scan-video');
+    vid.srcObject = null;
+    vid.style.display = 'none';
+    document.getElementById('cam-capture-btn').style.display = 'none';
+    document.getElementById('cam-cancel-btn').style.display  = 'none';
+    const ph = document.getElementById('scan-placeholder');
+    if (!_photo) ph.style.display = 'flex';
   }
 
   function onFileChange(e) {
@@ -28,23 +75,28 @@ const glowScan = (() => {
     const ph    = document.getElementById('scan-placeholder');
     const btn   = document.getElementById('float-analyze');
     const ring  = document.getElementById('ring-light');
+    const back  = document.getElementById('photo-back-btn');
     img.src     = dataUrl;
     img.style.display = 'block';
     if (ph)   ph.style.display  = 'none';
     if (btn)  btn.classList.add('show');
     if (ring) ring.classList.add('active');
+    if (back) back.style.display = 'block';
   }
 
   function clearPhoto() {
     _photo = null;
+    stopCamera();
     const img  = document.getElementById('scan-photo');
     const ph   = document.getElementById('scan-placeholder');
     const btn  = document.getElementById('float-analyze');
     const ring = document.getElementById('ring-light');
+    const back = document.getElementById('photo-back-btn');
     img.src = ''; img.style.display = 'none';
     if (ph)   ph.style.display  = 'flex';
     if (btn)  btn.classList.remove('show');
     if (ring) ring.classList.remove('active');
+    if (back) back.style.display = 'none';
   }
 
   // ── Analyze ──────────────────────────────────────────
@@ -78,9 +130,11 @@ const glowScan = (() => {
       openSheet('results-sheet');
     } catch(e) {
       overlay.classList.remove('show');
+      console.error('[GlowAI] analyze error', e);
       const msg = e.status === 401 ? 'Invalid API key — check Settings ⚙️'
                 : e.status === 429 ? 'Too many requests — try again shortly'
-                : 'Analysis failed: ' + (e.message || 'Unknown error');
+                : e.circuitOpen    ? 'Service unavailable — reload page and try again'
+                : `Analysis failed (${e.status || e.name || 'unknown'}): ${e.message || 'check console for details'}`;
       if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); openSheet('results-sheet'); }
       else showToast(msg);
     }
@@ -92,32 +146,58 @@ const glowScan = (() => {
     const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
     const flagged   = _selectedConcerns();
 
-    // #ASSUMPTION: B2B esthetician tool — clinical language is expected
-    const system = `You are GlowAI, an expert AI esthetician. Analyze client skin photos with clinical precision. Return ONLY valid JSON.`;
+    // #ASSUMPTION: consumer pocket-esthetician tool — friendly, non-shaming tone required
+    const system = `You are GlowAI, a friendly and knowledgeable pocket esthetician. Your personality is calm, warm, non-shaming, and inclusive — like a trusted friend who happens to know a lot about skincare. You never use clinical jargon without explaining it, and you never shame or alarm the user about their skin.
+
+Tone rules:
+- Use gentle, encouraging language. Prefer "your skin looks like it's craving hydration" over "you have dehydrated skin."
+- Use qualifying language when uncertain: "likely", "possible", "appears to be", "from what I can see."
+- Never claim certainty when the photo is unclear or the damage is ambiguous.
+- If photo quality is low, say so kindly: "I'm having trouble reading this clearly — a photo near natural light would help."
+
+Safety rules (non-negotiable):
+- NEVER diagnose medical conditions. You assess visible skin characteristics only.
+- If any concern suggests a medical issue (lesions, sudden changes, rashes, pain), respond with: "That sounds like something worth showing a dermatologist — I'm not the right tool for this one."
+- Always include a patch-test reminder for any new product recommendation.
+- Never recommend undiluted essential oils, lemon juice, baking soda, or known skin irritants.
+- Include the disclaimer: "Preliminary read — not a medical diagnosis." in your summary.
+
+Skin language:
+- No "problem skin" or "bad skin."
+- No "anti-aging" as a fear hook.
+- All skin tones, all genders, all budgets welcome.
+- Suggest budget-friendly alternatives alongside premium options.
+
+Return ONLY valid JSON.`;
 
     const content = [
       { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
       { type: 'text', text:
-        `Analyze this client's skin for a professional consultation.${flagged.length ? ` Esthetician-flagged concerns: ${flagged.join(', ')}.` : ''}
+        `Look at this skin photo and give a gentle, honest read.${flagged.length ? ` The user mentioned these concerns: ${flagged.join(', ')}.` : ''}
+
+Speak directly to the user in a warm, calm tone — like a trusted esthetician friend.
+Use qualifying language (likely, appears to be, from what I can see) when uncertain.
+If the image is unclear or lighting is poor, say so kindly in the summary.
 
 Return ONLY this JSON:
 {
   "skinType": "<Dry | Oily | Combination | Normal | Sensitive | Mature>",
-  "score": <0-100>,
-  "summary": "<2 sentence clinical summary: state skin type, key findings, overall assessment>",
+  "score": <0-100, where 100 means skin looking its best right now>,
+  "summary": "<2-3 warm sentences: what you observe, what it might mean, one encouraging note. End with: Preliminary read — not a medical diagnosis.>",
   "concerns": [
-    { "name": "<concern>", "score": <0-100 severity>, "explanation": "<2 sentences: root cause + treatment rationale>" }
+    { "name": "<plain-English concern name — no shaming language>", "score": <0-100 how prominent>, "explanation": "<2 sentences: gentle cause + suggestion. Never alarm.>" }
   ],
   "recommendations": [
-    { "step": 1, "action": "<specific treatment or product>", "why": "<1 sentence clinical rationale>" }
+    { "step": 1, "action": "<specific product or step — always include a budget-friendly option>", "why": "<1 warm sentence why this helps. Add patch-test reminder on the first new product.>" }
   ]
 }
-3-5 concerns ranked by severity. 3-5 recommendations — prioritize professional treatments. Return ONLY JSON.`
+3-5 concerns, gentlest language possible. 3-5 recommendations — simple, budget-conscious, step by step. Return ONLY JSON.`
       }
     ];
 
+    // #ASSUMPTION: claude-sonnet-4-6 supports vision (images in messages)
     const data = await ClaudeAPI.call(glowState.apiKey, {
-      model: 'claude-opus-4-6',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system,
       messages: [{ role: 'user', content }],
@@ -141,35 +221,35 @@ Return ONLY this JSON:
     return {
       skinType,
       score,
-      summary: `Visual assessment confirms ${skinType.toLowerCase()} skin type with ${score >= 70 ? 'good overall condition and minor optimization opportunities' : 'moderate active concerns requiring targeted clinical intervention'}. ${score >= 70 ? 'Current protocol shows positive outcomes with enhancement potential.' : 'A structured evidence-based protocol will produce measurable improvement in 6–8 weeks.'}`,
+      summary: `Your skin looks like it has a ${skinType.toLowerCase()} profile — ${score >= 70 ? 'pretty balanced overall, with a couple of areas that would appreciate a little extra attention' : 'a few concerns worth addressing gently, and the good news is simple changes usually make a real difference'}. ${score >= 70 ? 'You\'re doing more right than wrong — a few small tweaks could take things up a notch.' : 'A consistent gentle routine for 4–6 weeks tends to shift things noticeably.'} Preliminary read — not a medical diagnosis.`,
       concerns: [
         {
-          name: hasAcne ? 'Active Acne & Congestion' : 'Mild Surface Congestion',
+          name: hasAcne ? 'Some Congestion & Breakouts' : 'Light Surface Congestion',
           score: hasAcne ? 68 : 30,
-          explanation: 'Excess sebum production and C. acnes proliferation within follicles driving active lesion formation. Salicylic acid (BHA) 2% penetrates pores to dissolve plugs; niacinamide 10% suppresses the inflammatory response concurrently.',
+          explanation: hasAcne ? 'Your skin appears to be producing a bit more oil than it can clear easily — totally common and very workable. A gentle BHA (salicylic acid) a few times a week can help, alongside a calming niacinamide serum.' : 'There\'s a little congestion visible, likely just some trapped sebum. A mild BHA cleanser a couple of times a week usually clears this up without over-stripping.',
         },
         {
-          name: hasDry ? 'Transepidermal Water Loss' : 'Mild Barrier Compromise',
+          name: hasDry ? 'Your Skin Is Thirsty' : 'Barrier Could Use Some Love',
           score: hasDry ? 72 : 28,
-          explanation: 'Compromised lipid barrier integrity allowing elevated moisture loss and reduced resilience. Humectant layering on damp skin followed by occlusive moisturizer restores barrier function within 2–3 weeks.',
+          explanation: hasDry ? 'Your skin looks like it\'s craving moisture — it may be losing water faster than it\'s retaining it. Applying moisturizer to slightly damp skin and locking it in with a gentle occlusive usually helps within a week or two.' : 'Your barrier seems a little stressed — possibly from over-washing or environmental factors. Simplifying your routine and adding a ceramide moisturizer tends to calm things down quickly.',
         },
         {
-          name: 'Impaired Surface Texture',
+          name: 'A Little Uneven Texture',
           score: 44,
-          explanation: 'Reduced epidermal cell turnover producing micro-roughness and dullness. AHA exfoliation 2× weekly accelerates desquamation, revealing smoother, more luminous skin within 4 weeks.',
+          explanation: 'Your skin\'s surface looks slightly uneven — this is really common and nothing to worry about. A gentle AHA exfoliant once or twice a week usually smooths things out over 3–4 weeks.',
         },
         {
-          name: 'Dilated Follicular Ostia',
+          name: hasOily ? 'Enlarged-Looking Pores' : 'Pores Are a Little Visible',
           score: hasOily ? 58 : 34,
-          explanation: 'Pore dilation secondary to sebum accumulation and loss of perifollicular elastin. Consistent BHA exfoliation removes intra-follicular debris; retinoids restore collagen and elastin tone over 12 weeks.',
+          explanation: 'Pores look a little enlarged — often from oil buildup rather than actual pore size, which means they\'re very manageable. Consistent gentle cleansing and a BHA exfoliant twice a week can make a noticeable difference.',
         },
       ],
       recommendations: [
-        { step: 1, action: hasOily ? 'La Roche-Posay Effaclar Foaming Gel — 60s cleanse AM/PM' : 'CeraVe Hydrating Facial Cleanser — gentle 60s cleanse AM/PM', why: 'pH-balanced cleansing preserves acid mantle while removing sebum, SPF, and environmental debris without triggering rebound.' },
-        { step: 2, action: 'The Ordinary Niacinamide 10% + Zinc 1% — apply AM and PM after toner', why: 'Niacinamide 10% clinically reduces sebum secretion by 65%, suppresses inflammatory cytokines, and stimulates ceramide synthesis.' },
-        { step: 3, action: hasDry ? 'CeraVe Moisturizing Cream — apply to damp skin AM/PM' : 'Neutrogena Hydro Boost Water Gel — pea-sized amount on damp skin AM/PM', why: 'Ceramide-dominant formulation restores lipid bilayer and reduces transepidermal water loss by up to 40%.' },
-        { step: 4, action: 'EltaMD UV Clear SPF 46 — 2mg/cm² as final AM step; reapply every 2h outdoors', why: 'Broad-spectrum protection prevents 95%+ of photoaging. UV radiation drives 80–90% of visible aging signs.' },
-        { step: 5, action: hasAcne ? "Paula's Choice 2% BHA Liquid — 3× weekly PM, leave-on" : 'The Ordinary Retinol 0.3% in Squalane — 2× weekly PM', why: hasAcne ? 'Salicylic acid penetrates follicle to dissolve sebum plugs and suppress C. acnes proliferation.' : 'Retinol upregulates cell turnover and stimulates dermal collagen; full retinization in 8–12 weeks.' },
+        { step: 1, action: hasOily ? 'Gentle foaming cleanser AM/PM — try La Roche-Posay Effaclar Gel (or budget: Cetaphil Oily Skin Cleanser)' : 'Hydrating cleanser AM/PM — try CeraVe Hydrating Cleanser (budget-friendly and widely available)', why: 'A pH-balanced cleanser is the foundation of everything. Cleanse for about 60 seconds — your skin will feel the difference. Patch test on your inner wrist first if it\'s new.' },
+        { step: 2, action: 'Niacinamide serum AM + PM — try The Ordinary Niacinamide 10% + Zinc (very affordable)', why: 'Niacinamide is one of the gentlest, most well-researched ingredients for balancing sebum and calming the skin. Most people tolerate it really well.' },
+        { step: 3, action: hasDry ? 'Rich moisturizer applied to slightly damp skin — try CeraVe Moisturizing Cream' : 'Lightweight gel moisturizer — try Neutrogena Hydro Boost (or budget: Simple Kind to Skin moisturizer)', why: 'Moisturizer on slightly damp skin traps hydration inside. This one step alone can change how your skin feels within a few days.' },
+        { step: 4, action: 'SPF 30+ every single morning — try EltaMD UV Clear SPF 46 (or budget: Bondi Sands SPF 50 Fragrance Free)', why: 'Sunscreen is the single most effective thing you can do for your skin long-term. No pressure, but try to make it the last step every AM.' },
+        { step: 5, action: hasAcne ? 'BHA exfoliant 2–3× per week PM — try Paula\'s Choice 2% BHA Liquid (budget: The Ordinary Salicylic 2% Solution)' : 'Optional: gentle AHA exfoliant 1–2× per week PM — try The Ordinary AHA 30% + BHA 2% Peeling Solution (start slowly)', why: hasAcne ? 'A leave-on BHA helps clear congestion without scrubbing. Start slowly — once a week — and build up. Always patch test first.' : 'A mild chemical exfoliant once a week can smooth texture noticeably over 3–4 weeks. Patch test, and skip if your skin feels sensitive.' },
       ],
     };
   }
@@ -276,5 +356,5 @@ Return ONLY this JSON:
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { tapZone, openCamera, onFileChange, setPhoto, clearPhoto, analyze, saveResult, loadHistory };
+  return { tapZone, openCamera, captureVideo, stopCamera, onFileChange, setPhoto, clearPhoto, analyze, saveResult, loadHistory };
 })();

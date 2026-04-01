@@ -17,22 +17,34 @@ const glowApp = (() => {
     if (keyEl && glowState.apiKey) keyEl.value = glowState.apiKey;
     _syncDemoBtn();
 
-    // Splash → scan
+    const onboarded = localStorage.getItem('glow_onboarded') === '1';
+
+    // Splash → onboarding (first time) or scan (returning)
     setTimeout(() => {
       document.getElementById('splash').classList.remove('active');
-      document.getElementById('scan').classList.add('active');
-      _initFloatIcons();
+      if (!onboarded) {
+        document.getElementById('onboarding').classList.add('active');
+      } else {
+        document.getElementById('scan').classList.add('active');
+        _initFloatIcons();
+      }
     }, 2200);
   }
 
-  function saveSettings() {
+  function enterScan() {
+    document.getElementById('onboarding').classList.remove('active');
+    document.getElementById('scan').classList.add('active');
+    _initFloatIcons();
+  }
+
+  function saveSettings(silent) {
     const val = document.getElementById('settings-apikey')?.value.trim() || '';
     if (val) {
       glowState.apiKey = val;
       localStorage.setItem('glow_apikey', val);
-      showToast('API key saved ✓');
+      if (!silent) showToast('API key saved ✓');
     }
-    closeSheet('settings-sheet');
+    if (!silent) closeSheet('settings-sheet');
   }
 
   function toggleDemo() {
@@ -148,7 +160,7 @@ const glowApp = (() => {
     try { const v = localStorage.getItem('glow_pos_' + key); return v ? JSON.parse(v) : null; } catch(e) { return null; }
   }
 
-  return { init, saveSettings, toggleDemo, resetApp };
+  return { init, enterScan, saveSettings, toggleDemo, resetApp };
 })();
 
 // ── Sheet helpers ───────────────────────────────────────
@@ -183,7 +195,7 @@ function _renderHistory() {
   if (!list) return;
   const scans = glowState.scanHistory;
   if (!scans.length) {
-    list.innerHTML = `<div style="color:#aaa;text-align:center;padding:40px 0;font-size:14px">No scans yet — take your first photo!</div>`;
+    list.innerHTML = `<div style="color:#aaa;text-align:center;padding:40px 0;font-size:14px;line-height:1.7">No reads yet.<br><span style="font-size:12px;opacity:0.6">Tap Scan My Skin to get started.</span></div>`;
     return;
   }
   list.innerHTML = [...scans].reverse().map((s, i) => {

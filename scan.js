@@ -41,7 +41,8 @@ const glowScan = (() => {
     canvas.width  = vid.videoWidth  || 640;
     canvas.height = vid.videoHeight || 480;
     canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    // #ASSUMPTION: 0.82 quality at live-camera resolution stays under 1MB
+    const dataUrl = _resizeDataUrl(canvas.toDataURL('image/jpeg', 0.92), 1024);
     stopCamera();
     setPhoto(dataUrl);
   }

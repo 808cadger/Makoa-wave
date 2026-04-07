@@ -1,18 +1,21 @@
-// scan.js — GlowAI scan + results
-// Aloha from Pearl City! 🌺
+// scan.js — GlowAI scan screen: camera, vision, results
+// Aloha from Pearl City!
 
 const glowScan = (() => {
-  let _photo = null;
+  'use strict';
+
+  let _photo  = null;
   let _stream = null;
 
-  // ── Photo ────────────────────────────────────────────
+  // ── Photo capture ────────────────────────────────────────
+
   function tapZone() {
     if (!_photo && !_stream) openCamera();
     else if (_stream) captureVideo();
   }
 
   async function openCamera() {
-    // #ASSUMPTION: getUserMedia available on https:// or localhost; fall back to file input otherwise
+    // #ASSUMPTION: getUserMedia available on https:// or localhost; falls back to file input
     if (!navigator.mediaDevices?.getUserMedia) {
       document.getElementById('scan-file').click();
       return;
@@ -29,7 +32,6 @@ const glowScan = (() => {
       document.getElementById('cam-capture-btn').style.display = 'block';
       document.getElementById('cam-cancel-btn').style.display  = 'block';
     } catch (err) {
-      // Permission denied or no camera — fall back to file picker
       _stream = null;
       document.getElementById('scan-file').click();
     }
@@ -41,10 +43,22 @@ const glowScan = (() => {
     canvas.width  = vid.videoWidth  || 640;
     canvas.height = vid.videoHeight || 480;
     canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
-    // #ASSUMPTION: 0.82 quality at live-camera resolution stays under 1MB
-    const dataUrl = _resizeDataUrl(canvas.toDataURL('image/jpeg', 0.92), 1024);
+    // #ASSUMPTION: resizing to 1024px keeps payload under ~500KB for vision API
+    const dataUrl = _canvasToJpeg(canvas, 1024);
     stopCamera();
     setPhoto(dataUrl);
+  }
+
+  // Resize canvas to maxDim, return JPEG data URL — synchronous, canvas-only
+  function _canvasToJpeg(canvas, maxDim) {
+    const w = canvas.width, h = canvas.height;
+    const scale = Math.min(1, maxDim / Math.max(w, h));
+    if (scale >= 1) return canvas.toDataURL('image/jpeg', 0.88);
+    const out = document.createElement('canvas');
+    out.width  = Math.round(w * scale);
+    out.height = Math.round(h * scale);
+    out.getContext('2d').drawImage(canvas, 0, 0, out.width, out.height);
+    return out.toDataURL('image/jpeg', 0.88);
   }
 
   function stopCamera() {
@@ -72,17 +86,17 @@ const glowScan = (() => {
 
   function setPhoto(dataUrl) {
     _photo = dataUrl;
-    const img   = document.getElementById('scan-photo');
-    const ph    = document.getElementById('scan-placeholder');
-    const btn   = document.getElementById('float-analyze');
-    const ring  = document.getElementById('ring-light');
-    const back  = document.getElementById('photo-back-btn');
-    img.src     = dataUrl;
+    const img  = document.getElementById('scan-photo');
+    const ph   = document.getElementById('scan-placeholder');
+    const ring = document.getElementById('ring-light');
+    const back = document.getElementById('photo-back-btn');
+    const bar  = document.getElementById('analyze-bar');
+    img.src = dataUrl;
     img.style.display = 'block';
-    if (ph)   ph.style.display  = 'none';
-    if (btn)  btn.classList.add('show');
+    if (ph)   ph.style.display   = 'none';
     if (ring) ring.classList.add('active');
     if (back) back.style.display = 'block';
+    if (bar)  bar.classList.add('show');
   }
 
   function clearPhoto() {
@@ -90,36 +104,39 @@ const glowScan = (() => {
     stopCamera();
     const img  = document.getElementById('scan-photo');
     const ph   = document.getElementById('scan-placeholder');
-    const btn  = document.getElementById('float-analyze');
     const ring = document.getElementById('ring-light');
     const back = document.getElementById('photo-back-btn');
+    const bar  = document.getElementById('analyze-bar');
     img.src = ''; img.style.display = 'none';
-    if (ph)   ph.style.display  = 'flex';
-    if (btn)  btn.classList.remove('show');
+    if (ph)   ph.style.display      = 'flex';
     if (ring) ring.classList.remove('active');
-    if (back) back.style.display = 'none';
+    if (back) back.style.display    = 'none';
+    if (bar)  bar.classList.remove('show');
   }
 
-  // ── Analyze ──────────────────────────────────────────
+  // ── Analyze ──────────────────────────────────────────────
+
   async function analyze() {
     if (!_photo && !glowState.demoMode) {
       showToast('Add a photo first 📷');
       return;
     }
-    if (!glowState.apiKey && !glowState.demoMode) {
+    if (!glowState.authToken && !glowState.demoMode) {
       openSheet('settings-sheet');
-      showToast('Enter your API key first ⚙️');
+      showToast('Sign in to analyze your skin ✨');
       return;
     }
 
     const overlay = document.getElementById('analyzing');
     const errEl   = document.getElementById('results-error');
+    const bar     = document.getElementById('analyze-bar');
     overlay.classList.add('show');
+    if (bar)   bar.classList.remove('show');
     if (errEl) errEl.classList.add('hidden');
 
     try {
       let result;
-      if (glowState.demoMode || !glowState.apiKey) {
+      if (glowState.demoMode || !glowState.authToken) {
         await new Promise(r => setTimeout(r, 1900));
         result = _buildDemoResult();
       } else {
@@ -129,88 +146,38 @@ const glowScan = (() => {
       _renderResults(result);
       overlay.classList.remove('show');
       openSheet('results-sheet');
-    } catch(e) {
+    } catch (e) {
       overlay.classList.remove('show');
       console.error('[GlowAI] analyze error', e);
-      const msg = e.status === 401 ? 'Invalid API key — check Settings ⚙️'
-                : e.status === 429 ? 'Too many requests — try again shortly'
-                : e.circuitOpen    ? 'Service unavailable — reload page and try again'
-                : `Analysis failed (${e.status || e.name || 'unknown'}): ${e.message || 'check console for details'}`;
+      if (e.unauthorized) {
+        glowApp.sessionExpired();
+        return;
+      }
+      const msg = e.status === 429   ? 'Rate limit — try again in a few minutes'
+                : e.status === 413   ? 'Photo too large — try a smaller image'
+                : e.circuitOpen      ? 'Service unavailable — reload and try again'
+                : `Analysis failed: ${e.message || 'check console'}`;
       if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); openSheet('results-sheet'); }
       else showToast(msg);
     }
   }
 
-  // ── Claude vision API ────────────────────────────────
+  // ── Server-proxied vision call ───────────────────────────
+
   async function _callVision(dataUrl) {
     const base64    = dataUrl.split(',')[1];
     const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
-    const flagged   = _selectedConcerns();
-
-    // #ASSUMPTION: consumer pocket-esthetician tool — friendly, non-shaming tone required
-    const system = `You are GlowAI, a friendly and knowledgeable pocket esthetician. Your personality is calm, warm, non-shaming, and inclusive — like a trusted friend who happens to know a lot about skincare. You never use clinical jargon without explaining it, and you never shame or alarm the user about their skin.
-
-Tone rules:
-- Use gentle, encouraging language. Prefer "your skin looks like it's craving hydration" over "you have dehydrated skin."
-- Use qualifying language when uncertain: "likely", "possible", "appears to be", "from what I can see."
-- Never claim certainty when the photo is unclear or the damage is ambiguous.
-- If photo quality is low, say so kindly: "I'm having trouble reading this clearly — a photo near natural light would help."
-
-Safety rules (non-negotiable):
-- NEVER diagnose medical conditions. You assess visible skin characteristics only.
-- If any concern suggests a medical issue (lesions, sudden changes, rashes, pain), respond with: "That sounds like something worth showing a dermatologist — I'm not the right tool for this one."
-- Always include a patch-test reminder for any new product recommendation.
-- Never recommend undiluted essential oils, lemon juice, baking soda, or known skin irritants.
-- Include the disclaimer: "Preliminary read — not a medical diagnosis." in your summary.
-
-Skin language:
-- No "problem skin" or "bad skin."
-- No "anti-aging" as a fear hook.
-- All skin tones, all genders, all budgets welcome.
-- Suggest budget-friendly alternatives alongside premium options.
-
-Return ONLY valid JSON.`;
-
-    const content = [
-      { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-      { type: 'text', text:
-        `Look at this skin photo and give a gentle, honest read.${flagged.length ? ` The user mentioned these concerns: ${flagged.join(', ')}.` : ''}
-
-Speak directly to the user in a warm, calm tone — like a trusted esthetician friend.
-Use qualifying language (likely, appears to be, from what I can see) when uncertain.
-If the image is unclear or lighting is poor, say so kindly in the summary.
-
-Return ONLY this JSON:
-{
-  "skinType": "<Dry | Oily | Combination | Normal | Sensitive | Mature>",
-  "score": <0-100, where 100 means skin looking its best right now>,
-  "summary": "<2-3 warm sentences: what you observe, what it might mean, one encouraging note. End with: Preliminary read — not a medical diagnosis.>",
-  "concerns": [
-    { "name": "<plain-English concern name — no shaming language>", "score": <0-100 how prominent>, "explanation": "<2 sentences: gentle cause + suggestion. Never alarm.>" }
-  ],
-  "recommendations": [
-    { "step": 1, "action": "<specific product or step — always include a budget-friendly option>", "why": "<1 warm sentence why this helps. Add patch-test reminder on the first new product.>" }
-  ]
-}
-3-5 concerns, gentlest language possible. 3-5 recommendations — simple, budget-conscious, step by step. Return ONLY JSON.`
-      }
-    ];
-
-    // #ASSUMPTION: claude-sonnet-4-6 supports vision (images in messages)
-    const data = await ClaudeAPI.call(glowState.apiKey, {
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
-      system,
-      messages: [{ role: 'user', content }],
+    // System prompt + model selection live server-side in server/main.py
+    return ClaudeAPI.scan({
+      image_b64:  base64,
+      media_type: mediaType,
+      skin_type:  glowState.skinType,
+      concerns:   _selectedConcerns(),
     });
-
-    const raw   = data.content?.filter(b => b.type === 'text').map(b => b.text).join('').trim() || '{}';
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Invalid AI response');
-    return JSON.parse(match[0]);
   }
 
-  // ── Demo result ──────────────────────────────────────
+  // ── Demo result ──────────────────────────────────────────
+
   function _buildDemoResult() {
     const sel     = _selectedConcerns();
     const hasAcne = sel.includes('Acne');
@@ -220,8 +187,7 @@ Return ONLY this JSON:
     const score    = hasAcne ? 52 : hasDry ? 62 : 74;
 
     return {
-      skinType,
-      score,
+      skinType, score,
       summary: `Your skin looks like it has a ${skinType.toLowerCase()} profile — ${score >= 70 ? 'pretty balanced overall, with a couple of areas that would appreciate a little extra attention' : 'a few concerns worth addressing gently, and the good news is simple changes usually make a real difference'}. ${score >= 70 ? 'You\'re doing more right than wrong — a few small tweaks could take things up a notch.' : 'A consistent gentle routine for 4–6 weeks tends to shift things noticeably.'} Preliminary read — not a medical diagnosis.`,
       concerns: [
         {
@@ -255,7 +221,8 @@ Return ONLY this JSON:
     };
   }
 
-  // ── Render results ───────────────────────────────────
+  // ── Render results ───────────────────────────────────────
+
   function _renderResults(result) {
     const score = result.score ?? 0;
     const arc   = document.getElementById('score-arc');
@@ -271,6 +238,7 @@ Return ONLY this JSON:
         arc.style.strokeDashoffset = String(offset);
       }));
     }
+
     if (numEl) {
       let cur = 0; const step = score / (1200 / 16);
       const t = setInterval(() => {
@@ -282,7 +250,7 @@ Return ONLY this JSON:
 
     const badge = document.getElementById('results-skin-type');
     if (badge) {
-      badge.textContent  = (result.skinType || '') + ' Skin';
+      badge.textContent   = (result.skinType || '') + ' Skin';
       badge.style.display = result.skinType ? 'inline-block' : 'none';
     }
 
@@ -322,7 +290,8 @@ Return ONLY this JSON:
     }
   }
 
-  // ── Save / load history ──────────────────────────────
+  // ── History ──────────────────────────────────────────────
+
   function saveResult() {
     if (!glowState.currentResult) return;
     const entry = {
@@ -332,8 +301,9 @@ Return ONLY this JSON:
       skinType: glowState.currentResult.skinType,
       result:   glowState.currentResult,
     };
-    glowState.scanHistory.push(entry);
-    try { localStorage.setItem('glow_scans', JSON.stringify(glowState.scanHistory)); } catch(e) {}
+    const hist = glowState.scanHistory;
+    hist.push(entry);
+    glowState.scanHistory = hist;  // triggers persist
     showToast('Report saved ✓');
     closeSheet('results-sheet');
   }
@@ -348,13 +318,18 @@ Return ONLY this JSON:
     setTimeout(() => openSheet('results-sheet'), 280);
   }
 
-  // ── Helpers ──────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────
+
   function _selectedConcerns() {
     return [...document.querySelectorAll('#concern-chips .c-chip.on')].map(c => c.dataset.val);
   }
 
   function _esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   return { tapZone, openCamera, captureVideo, stopCamera, onFileChange, setPhoto, clearPhoto, analyze, saveResult, loadHistory };

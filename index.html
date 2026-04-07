@@ -8,283 +8,11 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-    :root {
-      --rose:   #E8A598;
-      --rose2:  #D4826E;
-      --sage:   #A8B89C;
-      --sage2:  #7A9B6E;
-      --gold:   #D4AF82;
-      --cream:  #FAF8F5;
-      --bg:     #080808;
-      /* legacy aliases — keeps older rules working */
-      --pink:   #E8A598;
-      --hot:    #D4826E;
-      --blush:  #F0C4BA;
-    }
-
-    html, body {
-      width: 100%; height: 100%; overflow: hidden;
-      background: var(--bg);
-      font-family: 'Inter', -apple-system, sans-serif;
-      color: #fff; position: fixed; inset: 0;
-    }
-
-    /* ═══════════════════════════════════
-       RING LIGHT — studio photo border
-    ═══════════════════════════════════ */
-    #ring-light {
-      position: fixed; inset: 0; z-index: 9000; pointer-events: none;
-      box-shadow:
-        inset 0 0 38px 14px rgba(255,255,255,0.32),
-        inset 0 0 80px 30px rgba(255,255,255,0.12),
-        inset 0 0 160px 60px rgba(255,220,200,0.06);
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-    #ring-light.active {
-      animation: ringPulse 4s ease-in-out infinite;
-    }
-    @keyframes ringPulse {
-      0%,100% { opacity: 0.65; }
-      50%      { opacity: 0.85; }
-    }
-
-    /* ═══════════════════════════════════
-       SCREENS
-    ═══════════════════════════════════ */
-    .screen { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; }
-    .screen.active { display: flex; }
-
-    /* ── Splash ── */
-    #splash { background: #0E0C0A; }
-    .splash-logo {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 56px; font-weight: 900; letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #D4AF82 0%, #E8A598 55%, #F0C4BA 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      animation: fadeUp 0.9s ease both;
-    }
-    .splash-tagline {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 16px; font-style: italic; font-weight: 400;
-      color: rgba(255,255,255,0.52); margin-top: 10px;
-      animation: fadeUp 0.9s 0.18s ease both;
-    }
-    .splash-sub {
-      font-size: 10.5px; letter-spacing: 0.32em; text-transform: uppercase;
-      color: rgba(255,255,255,0.22); margin-top: 22px;
-      animation: fadeUp 0.9s 0.35s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(22px); }
-      to   { opacity: 1; transform: translateY(0);    }
-    }
-
-    /* ── Onboarding ── */
-    #onboarding { background: #0E0C0A; flex-direction: column; padding: 0 28px; }
-    .ob-step { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 340px; }
-    .ob-step.active { display: flex; animation: fadeUp 0.5s ease both; }
-    .ob-num {
-      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--rose); margin-bottom: 28px; font-weight: 600;
-    }
-    .ob-icon { font-size: 62px; margin-bottom: 22px; }
-    .ob-title {
-      font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700;
-      color: #fff; line-height: 1.25; margin-bottom: 12px;
-    }
-    .ob-body { font-size: 14px; line-height: 1.72; color: rgba(255,255,255,0.52); margin-bottom: 36px; }
-    .ob-btn {
-      width: 100%; padding: 16px; border-radius: 14px; border: none; cursor: pointer;
-      background: linear-gradient(135deg, var(--rose), var(--rose2));
-      color: #fff; font-size: 16px; font-weight: 700;
-      box-shadow: 0 4px 22px rgba(232,165,152,0.38);
-      transition: opacity 0.15s;
-    }
-    .ob-btn:active { opacity: 0.84; }
-    .ob-skip {
-      margin-top: 16px; background: none; border: none; color: rgba(255,255,255,0.28);
-      font-size: 13px; cursor: pointer; padding: 8px;
-    }
-    .ob-dots { display: flex; gap: 7px; margin-bottom: 32px; }
-    .ob-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.18); transition: background 0.3s; }
-    .ob-dot.on { background: var(--rose); }
-
-    /* ── Scan (main) ── */
-    #scan { background: #0E0C0A; }
-
-    .photo-zone {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    #scan-photo { width: 100%; height: 100%; object-fit: cover; display: none; }
-
-    #scan-placeholder {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 18px; pointer-events: none;
-    }
-    .scan-ring {
-      width: 230px; height: 230px; border-radius: 50%;
-      border: 1.5px solid rgba(232,165,152,0.18);
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-      box-shadow: 0 0 80px rgba(232,165,152,0.14), inset 0 0 50px rgba(212,175,130,0.07);
-    }
-    .scan-ring::before {
-      content:''; position:absolute; inset:-10px; border-radius:50%;
-      border:1px solid rgba(232,165,152,0.26);
-      animation: rPulse 2.4s ease-in-out infinite;
-    }
-    .scan-ring::after {
-      content:''; position:absolute; inset:-22px; border-radius:50%;
-      border:1px solid rgba(168,184,156,0.14);
-      animation: rPulse 2.4s 0.5s ease-in-out infinite;
-    }
-    @keyframes rPulse {
-      0%,100% { transform:scale(1);    opacity:0.55; }
-      50%      { transform:scale(1.04); opacity:1;   }
-    }
-    .scan-icon  { font-size: 68px; }
-    .scan-label { font-family:'Playfair Display',serif; font-size:23px; font-weight:700; color:rgba(255,255,255,0.82); }
-    .scan-sub   { font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
-
-    /* ═══════════════════════════════════
-       FLOATING DRAGGABLE ICONS
-    ═══════════════════════════════════ */
-    .float-icon {
-      position: fixed;
-      width: 56px; height: 56px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      background: rgba(255,255,255,0.09);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 4px 22px rgba(0,0,0,0.45);
-      cursor: pointer; z-index: 500;
-      touch-action: none; user-select: none;
-    }
-    .float-icon.pink {
-      background: linear-gradient(135deg, rgba(232,165,152,0.92), rgba(212,130,110,0.92));
-      border-color: rgba(232,165,152,0.4);
-      box-shadow: 0 4px 28px rgba(232,165,152,0.48);
-    }
-    #float-analyze { width:72px; height:72px; font-size:30px; display:none; }
-    #float-analyze.show { display:flex; }
-    #float-concerns { width:auto; border-radius:30px; padding:0 18px; font-size:13px; font-weight:600; height:44px; white-space:nowrap; }
-
-    /* ═══════════════════════════════════
-       BOTTOM SHEETS
-    ═══════════════════════════════════ */
-    #sheet-overlay {
-      position:fixed; inset:0; z-index:800;
-      background:rgba(0,0,0,0.55); backdrop-filter:blur(5px);
-      display:none;
-    }
-    #sheet-overlay.open { display:block; }
-
-    .sheet {
-      position:fixed; bottom:0; left:0; right:0; z-index:900;
-      border-radius:28px 28px 0 0;
-      background:#fff; color:#111;
-      max-height:88vh; overflow-y:auto;
-      transform:translateY(100%);
-      transition:transform 0.36s cubic-bezier(0.32,0.72,0,1);
-    }
-    .sheet.open { transform:translateY(0); }
-    .sheet-handle { width:38px; height:4px; border-radius:2px; background:#e0e0e0; margin:14px auto 0; }
-    .sheet-title  { padding:18px 24px 6px; font-family:'Playfair Display',serif; font-size:25px; font-weight:700; color:#111; }
-    .sheet-body   { padding:10px 24px 48px; }
-
-    /* Results */
-    .score-wrap { display:flex; flex-direction:column; align-items:center; padding:14px 0 4px; }
-    .skin-badge {
-      display:inline-block; margin:6px auto;
-      background:linear-gradient(135deg, var(--rose), var(--rose2));
-      color:#fff; border-radius:50px;
-      padding:6px 22px; font-size:13px; font-weight:700;
-      letter-spacing:0.07em; text-transform:uppercase;
-      box-shadow:0 4px 18px rgba(232,165,152,0.34);
-    }
-    .result-summary { font-size:13.5px; line-height:1.72; color:#555; text-align:center; margin:10px 0 18px; }
-    .sec-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#111; margin:18px 0 9px; }
-
-    .concern-card { background:#F7F7F7; border-radius:14px; padding:13px 15px; margin-bottom:9px; }
-    .concern-name { font-size:14px; font-weight:700; color:#111; margin-bottom:5px; }
-    .bar-track    { height:5px; background:#eaeaea; border-radius:3px; margin-bottom:7px; }
-    .bar-fill     { height:100%; border-radius:3px; background:linear-gradient(90deg, var(--rose), var(--sage)); width:0; transition:width 1s cubic-bezier(0.34,1.2,0.64,1); }
-    .concern-expl { font-size:12.5px; color:#666; line-height:1.6; }
-
-    .rec-card   { background:#F7F7F7; border-radius:14px; padding:13px 15px; margin-bottom:9px; display:flex; gap:11px; }
-    .rec-num    { width:28px; height:28px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg, var(--sage), var(--sage2)); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; }
-    .rec-action { font-size:13.5px; font-weight:600; color:#111; margin-bottom:3px; }
-    .rec-why    { font-size:12px; color:#777; line-height:1.55; }
-
-    .result-actions { display:flex; gap:10px; margin-top:22px; }
-    .btn-pink    { flex:1; padding:15px; border-radius:14px; border:none; background:linear-gradient(135deg, var(--rose), var(--rose2)); color:#fff; font-size:15px; font-weight:700; box-shadow:0 4px 20px rgba(232,165,152,0.34); cursor:pointer; }
-    .btn-outline { flex:1; padding:15px; border-radius:14px; border:1.5px solid var(--rose); background:transparent; color: var(--rose2); font-size:15px; font-weight:600; cursor:pointer; }
-
-    /* Concerns chips */
-    .chips-grid { display:flex; flex-wrap:wrap; gap:8px; padding:6px 0; }
-    .c-chip {
-      padding:8px 15px; border-radius:50px;
-      border:1.5px solid #eee; font-size:13px; font-weight:500;
-      color:#666; cursor:pointer; transition:all 0.15s; background:#fff; user-select:none;
-    }
-    .c-chip.on {
-      background:linear-gradient(135deg, var(--rose), var(--sage));
-      border-color:transparent; color:#fff; font-weight:700;
-      box-shadow:0 3px 12px rgba(232,165,152,0.28);
-    }
-
-    /* Settings */
-    .field-lbl   { font-size:11.5px; font-weight:600; color:#999; letter-spacing:0.09em; text-transform:uppercase; margin-bottom:8px; }
-    .field-input { width:100%; padding:14px 16px; border-radius:12px; border:1.5px solid #eee; background:#F8F8F8; font-size:15px; color:#111; outline:none; font-family:monospace; transition:border-color 0.2s; }
-    .field-input:focus { border-color: var(--rose); }
-    .btn-save  { width:100%; padding:16px; border-radius:14px; border:none; margin-top:14px; background:linear-gradient(135deg, var(--rose), var(--rose2)); color:#fff; font-size:16px; font-weight:700; box-shadow:0 4px 20px rgba(232,165,152,0.32); cursor:pointer; }
-    .btn-ghost { width:100%; padding:13px; border-radius:12px; border:1.5px solid #eee; background:transparent; color:#bbb; font-size:13px; cursor:pointer; margin-top:10px; }
-    .btn-demo  { width:100%; padding:13px; border-radius:12px; border:1.5px solid var(--rose); background:transparent; color: var(--rose2); font-size:14px; font-weight:600; cursor:pointer; margin-top:10px; transition:all 0.2s; }
-    .btn-demo.on { background:linear-gradient(135deg, var(--rose), var(--rose2)); color:#fff; border-color:transparent; }
-
-    /* History */
-    .hist-item        { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f2f2f2; cursor:pointer; }
-    .hist-thumb       { width:54px; height:54px; border-radius:12px; object-fit:cover; flex-shrink:0; background:#f0f0f0; }
-    .hist-placeholder { width:54px; height:54px; border-radius:12px; background:linear-gradient(135deg,#FFB3CC,#FF4E8C); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px; }
-    .hist-date  { font-size:12px; color:#999; margin-top:2px; }
-    .hist-score { font-size:20px; font-weight:800; color: var(--rose2); margin-left:auto; }
-
-    /* Analyzing overlay */
-    #analyzing {
-      position:fixed; inset:0; z-index:700;
-      background:rgba(8,8,8,0.88); backdrop-filter:blur(10px);
-      display:none; flex-direction:column;
-      align-items:center; justify-content:center; gap:18px;
-    }
-    #analyzing.show { display:flex; }
-    .spin { font-size:46px; animation:rotate 2s linear infinite; }
-    @keyframes rotate { to { transform:rotate(360deg); } }
-    .ana-title { font-family:'Playfair Display',serif; font-size:21px; color:#fff; }
-    .ana-sub   { font-size:11.5px; color:rgba(255,255,255,0.38); letter-spacing:0.15em; text-transform:uppercase; }
-
-    /* Error */
-    .err-banner { background:rgba(255,50,50,0.1); border:1px solid rgba(255,50,50,0.3); color:#c00; border-radius:10px; padding:10px 14px; font-size:13px; line-height:1.5; margin-bottom:12px; }
-    .err-banner.hidden { display:none; }
-
-    /* Toast */
-    #toast {
-      position:fixed; bottom:88px; left:50%;
-      transform:translateX(-50%) translateY(18px);
-      background:rgba(20,20,20,0.95); color:#fff;
-      padding:10px 22px; border-radius:50px;
-      font-size:13px; font-weight:500;
-      opacity:0; transition:all 0.28s; z-index:9999;
-      white-space:nowrap; pointer-events:none;
-    }
-    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  </style>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/screens.css">
+  
 </head>
 <body>
 
@@ -306,13 +34,20 @@
     <div class="ob-dot"    id="ob-dot-2"></div>
   </div>
 
-  <!-- Step 1 -->
+  <!-- Step 1: Skin type picker -->
   <div class="ob-step active" id="ob-step-0">
     <div class="ob-num">Step 1 of 3</div>
     <div class="ob-icon">🌿</div>
-    <div class="ob-title">Tell us about your skin</div>
-    <div class="ob-body">Pick your skin type and any concerns that feel familiar.<br>No right or wrong answers — this just helps GlowAI start in the right place.</div>
-    <button class="ob-btn" onclick="glowOnboard.next()">Sounds good</button>
+    <div class="ob-title">What's your skin type?</div>
+    <div class="ob-body">Tap the one that sounds most like you. Not sure? "Combination" is a safe starting point.</div>
+    <div class="ob-types" id="ob-skin-types">
+      <button class="ob-type-chip" data-type="Dry" onclick="glowOnboard.pickType(this)">🏜️ Dry<span class="ob-type-hint">Tight, flaky, drinks up moisturizer</span></button>
+      <button class="ob-type-chip" data-type="Oily" onclick="glowOnboard.pickType(this)">✨ Oily<span class="ob-type-hint">Shiny T-zone, visible pores</span></button>
+      <button class="ob-type-chip" data-type="Combination" onclick="glowOnboard.pickType(this)">🌗 Combination<span class="ob-type-hint">Oily forehead, dry cheeks</span></button>
+      <button class="ob-type-chip" data-type="Normal" onclick="glowOnboard.pickType(this)">🌸 Normal<span class="ob-type-hint">Balanced, not much trouble</span></button>
+      <button class="ob-type-chip" data-type="Sensitive" onclick="glowOnboard.pickType(this)">🫧 Sensitive<span class="ob-type-hint">Reacts easily, redness-prone</span></button>
+    </div>
+    <button class="ob-btn" id="ob-type-next" onclick="glowOnboard.next()" disabled>Continue</button>
     <button class="ob-skip" onclick="glowOnboard.skip()">Skip intro</button>
   </div>
 
@@ -360,8 +95,15 @@
   <div class="float-icon"      id="float-settings" data-key="float-settings">⚙️</div>
   <div class="float-icon"      id="float-history"  data-key="float-history">📊</div>
   <div class="float-icon"      id="float-concerns" data-key="float-concerns">＋ Concerns</div>
-  <div class="float-icon pink" id="float-analyze"  data-key="float-analyze">✨</div>
+  <!-- Hidden legacy analyze icon (replaced by analyze-bar) -->
+  <div class="float-icon pink" id="float-analyze"  data-key="float-analyze" style="display:none!important">✨</div>
 
+</div>
+
+<!-- Big analyze CTA — appears after photo loaded -->
+<div id="analyze-bar">
+  <button class="analyze-cta" onclick="glowScan.analyze()">Analyze My Skin ✨</button>
+  <div class="analyze-hint">AI reads visible skin characteristics only</div>
 </div>
 
 <!-- Sheet overlay -->
@@ -435,22 +177,44 @@
   </div>
 </div>
 
-<!-- ════ SETTINGS SHEET ════ -->
+<!-- ════ ACCOUNT SHEET ════ -->
 <div id="settings-sheet" class="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">Settings</div>
+  <div class="sheet-title">Account</div>
   <div class="sheet-body">
-    <div class="field-lbl">Your Anthropic Key</div>
-    <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.5">Stored only on this device. Never shared.</div>
-    <input class="field-input" id="settings-apikey" type="password" placeholder="sk-ant-..."
-      onblur="glowApp.saveSettings(true)"
-      onkeydown="if(event.key==='Enter') glowApp.saveSettings()">
-    <button class="btn-save" onclick="glowApp.saveSettings()">Save Key</button>
-    <div style="height:20px"></div>
-    <div class="field-lbl">No Key? No Problem</div>
-    <div style="font-size:13px;color:#aaa;margin-bottom:8px">Try a sample read without an API key</div>
-    <button class="btn-demo" id="btn-demo" onclick="glowApp.toggleDemo()">Try Without a Key</button>
-    <button class="btn-ghost" onclick="glowApp.resetApp()">Reset All Data</button>
+
+    <!-- ── Not signed in ── -->
+    <div id="auth-panel">
+      <div class="field-lbl">Email</div>
+      <input class="field-input" id="auth-email" type="email" placeholder="you@example.com"
+        autocomplete="email" inputmode="email">
+      <div style="height:10px"></div>
+      <div class="field-lbl">Password</div>
+      <input class="field-input" id="auth-password" type="password" placeholder="••••••••"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') glowApp.authSubmit('login')">
+      <div id="auth-error" class="err-banner hidden"></div>
+      <button class="btn-save" id="auth-login-btn" onclick="glowApp.authSubmit('login')">Sign In</button>
+      <button class="btn-outline" style="width:100%;margin-top:10px;padding:14px;border-radius:14px"
+        onclick="glowApp.authSubmit('register')">Create Account</button>
+      <div style="height:20px"></div>
+      <div class="field-lbl">Just Exploring?</div>
+      <div style="font-size:13px;color:#aaa;margin-bottom:8px">Try a demo read without an account</div>
+      <button class="btn-demo" data-demo-btn onclick="glowApp.toggleDemo()">Demo Mode</button>
+    </div>
+
+    <!-- ── Signed in ── -->
+    <div id="account-panel" style="display:none">
+      <div style="text-align:center;padding:18px 0 24px">
+        <div style="font-size:38px;margin-bottom:10px">✨</div>
+        <div style="font-size:15px;font-weight:700;color:#111" id="account-email">—</div>
+        <div style="font-size:12px;color:#aaa;margin-top:3px">Signed in</div>
+      </div>
+      <button class="btn-demo" data-demo-btn onclick="glowApp.toggleDemo()">Demo Mode</button>
+      <button class="btn-ghost" onclick="glowApp.logout()">Sign Out</button>
+      <button class="btn-ghost" style="margin-top:6px" onclick="glowApp.resetApp()">Reset All Data</button>
+    </div>
+
   </div>
 </div>
 
@@ -472,9 +236,21 @@
 
 <div id="toast"></div>
 
-<script src="api-client.js"></script>
-<script src="app.js"></script>
-<script src="scan.js"></script>
-<script src="onboard.js"></script>
+<!-- Server URL override (Capacitor needs absolute IP) -->
+<script src="js/config.js"></script>
+<!-- Core -->
+<script src="js/core/state.js"></script>
+<script src="js/core/events.js"></script>
+<script src="js/core/router.js"></script>
+<script src="js/core/api.js"></script>
+<!-- Widgets -->
+<script src="js/widgets/toast.js"></script>
+<script src="js/widgets/sheets.js"></script>
+<script src="js/widgets/floaticons.js"></script>
+<!-- Screens -->
+<script src="js/screens/scan.js"></script>
+<script src="js/screens/onboard.js"></script>
+<!-- App controller -->
+<script src="js/main.js"></script>
 </body>
 </html>

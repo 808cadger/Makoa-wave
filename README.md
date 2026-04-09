@@ -83,3 +83,6 @@ npm run electron:dist                                  # Electron
 ---
 
 **Developer:** [codeberg.org/cadger808](https://codeberg.org/cadger808)
+---
+
+© 2026 cadger808 — All rights reserved.

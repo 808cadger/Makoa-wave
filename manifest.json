@@ -1,28 +1,21 @@
 {
-  "name": "GlowAI",
-  "short_name": "GlowAI",
-  "description": "AI-powered skin analysis and beauty assistant",
+  "name": "Makoa~Wave",
+  "short_name": "Makoa~Wave",
+  "description": "Find any event or company website — interpreted in your language",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#C4788A",
-  "background_color": "#070508",
+  "theme_color": "#07090F",
+  "background_color": "#07090F",
   "lang": "en-US",
-  "categories": ["health", "beauty", "lifestyle"],
+  "categories": ["travel", "utilities", "productivity"],
   "shortcuts": [
     {
-      "name": "Scan Skin",
-      "short_name": "Scan",
-      "description": "Start a new skin scan",
-      "url": "./index.html#scan",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "My Routine",
-      "short_name": "Routine",
-      "description": "View your skincare routine",
-      "url": "./index.html#routine",
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Find an event or company website",
+      "url": "./index.html#search",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ],

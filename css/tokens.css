@@ -1,26 +1,22 @@
-/* tokens.css — GlowAI Design Tokens
+/* tokens.css — Makoa~Wave Design Tokens
    Aloha from Pearl City! */
 
 :root {
-  /* ── Brand colors ── */
-  --rose:   #E8A598;
-  --rose2:  #D4826E;
-  --sage:   #A8B89C;
-  --sage2:  #7A9B6E;
-  --gold:   #D4AF82;
-  --cream:  #FAF8F5;
-  --bg:     #080808;
-  --bg-dark: #0E0C0A;
+  /* ── Brand ── */
+  --wave:    #38BDF8;
+  --wave2:   #0EA5E9;
+  --deep:    #0369A1;
+  --amber:   #F59E0B;
+  --amber2:  #D97706;
 
-  /* legacy aliases */
-  --pink:   #E8A598;
-  --hot:    #D4826E;
-  --blush:  #F0C4BA;
+  /* ── Surfaces ── */
+  --bg:      #07090F;
+  --bg-dark: #07090F;
+  --surface: rgba(255,255,255,0.055);
 
   /* ── Typography ── */
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body:    'Inter', -apple-system, system-ui, sans-serif;
-  --font-mono:    ui-monospace, 'SF Mono', monospace;
 
   /* ── Spacing ── */
   --space-xs:  4px;
@@ -33,17 +29,17 @@
   /* ── Radius ── */
   --radius-sm:   8px;
   --radius-md:  12px;
-  --radius-lg:  14px;
+  --radius-lg:  15px;
   --radius-xl:  28px;
   --radius-pill: 50px;
 
   /* ── Shadows ── */
-  --shadow-rose:  0 4px 22px rgba(232,165,152,0.38);
-  --shadow-soft:  0 4px 22px rgba(0,0,0,0.45);
-  --shadow-glow:  0 4px 28px rgba(232,165,152,0.48);
+  --shadow-wave:  0 4px 24px rgba(56,189,248,0.32);
+  --shadow-amber: 0 4px 22px rgba(245,158,11,0.38);
+  --shadow-soft:  0 4px 22px rgba(0,0,0,0.5);
 
-  /* ── Transitions ── */
-  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  /* ── Easing ── */
+  --ease-out:    cubic-bezier(0.32, 0.72, 0, 1);
   --ease-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
-  --ease-micro: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-micro:  cubic-bezier(0.4, 0, 0.2, 1);
 }

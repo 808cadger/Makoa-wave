@@ -108,8 +108,11 @@ const glowSearch = (() => {
     wrap.style.display = 'block';
     list.innerHTML = recent.map(r => `
       <div class="recent-item" onclick="glowSearch.open('${_esc(r.url)}')">
-        <span class="recent-name">${_esc(r.name)}</span>
-        <span class="recent-url">${_esc(r.url)}</span>
+        <div class="recent-item-text">
+          <div class="recent-name">${_esc(r.name)}</div>
+          <div class="recent-url">${_esc(r.url)}</div>
+        </div>
+        <span class="recent-arrow">→</span>
       </div>
     `).join('');
   }

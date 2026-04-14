@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0E0C0A">
+  <meta name="theme-color" content="#07090F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Makoa~Wave</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,45 +17,47 @@
 </head>
 <body>
 
-<div id="ring-light"></div>
-
 <!-- ════ SPLASH ════ -->
 <div id="splash" class="screen active">
-  <div class="splash-logo">Makoa~Wave</div>
-  <div class="splash-tagline">Your event interpreter</div>
-  <div class="splash-sub">Find Any Event · Any Language · Anywhere</div>
+  <div class="splash-inner">
+    <span class="splash-wave-icon">🌊</span>
+    <div class="splash-logo">Makoa~Wave</div>
+    <div class="splash-tagline">Your world, your language</div>
+    <div class="splash-sub">Find Any Event · Any Company · Anywhere</div>
+  </div>
 </div>
 
 <!-- ════ LANGUAGE ════ -->
 <div id="language" class="screen">
   <div class="lang-header">
+    <span class="lang-hero-icon">🌐</span>
     <div class="lang-title">Choose your language</div>
     <div class="lang-sub">We'll interpret everything in your language</div>
   </div>
   <div class="lang-grid" id="lang-grid">
-    <button class="lang-chip" data-lang="English"       data-code="en" onclick="glowLang.pick(this)">🇺🇸<span>English</span></button>
-    <button class="lang-chip" data-lang="Español"       data-code="es" onclick="glowLang.pick(this)">🇪🇸<span>Español</span></button>
-    <button class="lang-chip" data-lang="Français"      data-code="fr" onclick="glowLang.pick(this)">🇫🇷<span>Français</span></button>
-    <button class="lang-chip" data-lang="Português"     data-code="pt" onclick="glowLang.pick(this)">🇧🇷<span>Português</span></button>
-    <button class="lang-chip" data-lang="Deutsch"       data-code="de" onclick="glowLang.pick(this)">🇩🇪<span>Deutsch</span></button>
-    <button class="lang-chip" data-lang="Italiano"      data-code="it" onclick="glowLang.pick(this)">🇮🇹<span>Italiano</span></button>
-    <button class="lang-chip" data-lang="日本語"         data-code="ja" onclick="glowLang.pick(this)">🇯🇵<span>日本語</span></button>
-    <button class="lang-chip" data-lang="한국어"         data-code="ko" onclick="glowLang.pick(this)">🇰🇷<span>한국어</span></button>
-    <button class="lang-chip" data-lang="中文"           data-code="zh" onclick="glowLang.pick(this)">🇨🇳<span>中文</span></button>
-    <button class="lang-chip" data-lang="العربية"       data-code="ar" onclick="glowLang.pick(this)">🇸🇦<span>العربية</span></button>
-    <button class="lang-chip" data-lang="हिंदी"          data-code="hi" onclick="glowLang.pick(this)">🇮🇳<span>हिंदी</span></button>
-    <button class="lang-chip" data-lang="Русский"       data-code="ru" onclick="glowLang.pick(this)">🇷🇺<span>Русский</span></button>
-    <button class="lang-chip" data-lang="Filipino"      data-code="fil" onclick="glowLang.pick(this)">🇵🇭<span>Filipino</span></button>
-    <button class="lang-chip" data-lang="Tagalog"       data-code="tl" onclick="glowLang.pick(this)">🇵🇭<span>Tagalog</span></button>
-    <button class="lang-chip" data-lang="Nederlands"    data-code="nl" onclick="glowLang.pick(this)">🇳🇱<span>Nederlands</span></button>
-    <button class="lang-chip" data-lang="ʻŌlelo Hawaiʻi" data-code="haw" onclick="glowLang.pick(this)">🌺<span>Hawaiʻi</span></button>
+    <button class="lang-chip" data-lang="English"         onclick="glowLang.pick(this)">🇺🇸 <span>English</span></button>
+    <button class="lang-chip" data-lang="Español"         onclick="glowLang.pick(this)">🇪🇸 <span>Español</span></button>
+    <button class="lang-chip" data-lang="Français"        onclick="glowLang.pick(this)">🇫🇷 <span>Français</span></button>
+    <button class="lang-chip" data-lang="Português"       onclick="glowLang.pick(this)">🇧🇷 <span>Português</span></button>
+    <button class="lang-chip" data-lang="Deutsch"         onclick="glowLang.pick(this)">🇩🇪 <span>Deutsch</span></button>
+    <button class="lang-chip" data-lang="Italiano"        onclick="glowLang.pick(this)">🇮🇹 <span>Italiano</span></button>
+    <button class="lang-chip" data-lang="日本語"           onclick="glowLang.pick(this)">🇯🇵 <span>日本語</span></button>
+    <button class="lang-chip" data-lang="한국어"           onclick="glowLang.pick(this)">🇰🇷 <span>한국어</span></button>
+    <button class="lang-chip" data-lang="中文"             onclick="glowLang.pick(this)">🇨🇳 <span>中文</span></button>
+    <button class="lang-chip" data-lang="العربية"         onclick="glowLang.pick(this)">🇸🇦 <span>العربية</span></button>
+    <button class="lang-chip" data-lang="हिंदी"            onclick="glowLang.pick(this)">🇮🇳 <span>हिंदी</span></button>
+    <button class="lang-chip" data-lang="Русский"         onclick="glowLang.pick(this)">🇷🇺 <span>Русский</span></button>
+    <button class="lang-chip" data-lang="Filipino"        onclick="glowLang.pick(this)">🇵🇭 <span>Filipino</span></button>
+    <button class="lang-chip" data-lang="Nederlands"      onclick="glowLang.pick(this)">🇳🇱 <span>Nederlands</span></button>
+    <button class="lang-chip" data-lang="Türkçe"          onclick="glowLang.pick(this)">🇹🇷 <span>Türkçe</span></button>
+    <button class="lang-chip" data-lang="ʻŌlelo Hawaiʻi"  onclick="glowLang.pick(this)">🌺 <span>Hawaiʻi</span></button>
   </div>
 </div>
 
 <!-- ════ SEARCH ════ -->
 <div id="search" class="screen">
   <div class="search-header">
-    <div class="search-headline">Find any event</div>
+    <div class="search-headline">Find any event or company</div>
     <button class="search-lang-badge" id="search-lang-badge" onclick="glowRouter.show('language')">
       <span class="search-lang-flag" id="search-lang-flag">🌐</span>
       <span class="search-lang-name" id="search-lang-name">English</span>
@@ -64,32 +68,29 @@
     <input
       class="search-input"
       id="search-input"
-      type="text"
+      type="search"
       placeholder="e.g. Coachella, Apple, Comic-Con…"
       autocomplete="off"
       autocorrect="off"
       spellcheck="false"
       onkeydown="if(event.key==='Enter') glowSearch.find()"
     >
-    <button class="search-btn" id="search-btn" onclick="glowSearch.find()">
-      <span id="search-btn-text">Find →</span>
-    </button>
+    <button class="search-btn" id="search-btn" onclick="glowSearch.find()">Find →</button>
   </div>
 
-  <div class="search-error" id="search-error" style="display:none"></div>
+  <div class="search-error" id="search-error"></div>
 
   <!-- Result card -->
-  <div class="search-result" id="search-result" style="display:none">
+  <div class="search-result" id="search-result">
+    <div class="result-eyebrow">Official Website</div>
     <div class="result-name" id="result-name"></div>
     <div class="result-url" id="result-url"></div>
-    <button class="result-open-btn" id="result-open-btn" onclick="glowSearch.open()">
-      Open Website →
-    </button>
-    <div class="result-hint">Opens in your browser · Makoa~Wave stays available to help you interpret</div>
+    <button class="result-open-btn" onclick="glowSearch.open()">Open Website →</button>
+    <div class="result-hint">Opens in your browser — Makoa~Wave stays ready to help</div>
   </div>
 
   <!-- Recent searches -->
-  <div class="recent-wrap" id="recent-wrap" style="display:none">
+  <div class="recent-wrap" id="recent-wrap">
     <div class="recent-label">Recent</div>
     <div class="recent-list" id="recent-list"></div>
   </div>
@@ -97,8 +98,8 @@
 
 <!-- ════ ANALYZING OVERLAY ════ -->
 <div id="analyzing" style="display:none">
-  <div class="spin">🌐</div>
-  <div class="ana-title" id="ana-title">Finding website…</div>
+  <div class="ana-ring"></div>
+  <div class="ana-title">Finding website…</div>
   <div class="ana-sub">Powered by Claude AI</div>
 </div>
 

@@ -1,8 +1,8 @@
 /**
- * api.js — GlowAI Proxy Client
+ * api.js — Makoa~Wave Proxy Client
  * Aloha from Pearl City!
  *
- * Calls /api/scan and /api/chat on the GlowAI server.
+ * Calls /api/scan and /api/chat on the Makoa~Wave server.
  * The Anthropic API key never touches the browser — it lives in server/.env.
  *
  * #ASSUMPTION: server is same-origin for PWA; set GLOWAI_SERVER_URL global
@@ -73,7 +73,7 @@
     const reqId = Math.random().toString(36).slice(2, 9)
 
     if (!cbAllow()) {
-      const err = new Error('GlowAI API circuit breaker open — try again shortly')
+      const err = new Error('Makoa~Wave API circuit breaker open — try again shortly')
       err.circuitOpen = true
       throw err
     }
@@ -186,6 +186,23 @@
     return _call('/api/chat', payload, opts)
   }
 
-  root.ClaudeAPI = { scan, chat, log, cb }
+  /**
+   * Identify any object and its parts.
+   * @param {{ image_b64, media_type, question? }} payload
+   */
+  function identify (payload, opts) {
+    return _call('/api/identify', payload, opts)
+  }
+
+  /**
+   * Look up the official website for an event or company name.
+   * @param {{ query: string, language: string }} payload
+   * @returns {{ url: string, name: string }}
+   */
+  function lookup (payload, opts) {
+    return _call('/api/lookup', payload, opts)
+  }
+
+  root.ClaudeAPI = { scan, chat, identify, lookup, log, cb }
 
 })(typeof window !== 'undefined' ? window : this)

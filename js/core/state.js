@@ -1,4 +1,4 @@
-// state.js — GlowAI Centralized State Store
+// state.js — Makoa~Wave Centralized State Store
 // Aloha from Pearl City!
 
 const glowState = (() => {
@@ -6,13 +6,10 @@ const glowState = (() => {
 
   // ── Default shape ──
   const _defaults = {
-    authToken:   '',
-    userEmail:   '',
-    demoMode:    false,
-    skinType:    '',
-    onboarded:   false,
-    scanHistory: [],
-    currentResult: null,
+    language:       '',
+    languageFlag:   '',
+    recentSearches: [],
+    currentResult:  null,
   };
 
   // ── Load from localStorage, migrating legacy keys ──
@@ -26,7 +23,7 @@ const glowState = (() => {
     const oldScans = localStorage.getItem('glow_scans');
 
     // Load new unified key first
-    const saved = localStorage.getItem('glowai_state');
+    const saved = localStorage.getItem('makoa_state');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -61,18 +58,14 @@ const glowState = (() => {
   // ── Persist to localStorage ──
   function _save(s) {
     const toSave = {
-      authToken:   s.authToken,
-      userEmail:   s.userEmail,
-      demoMode:    s.demoMode,
-      skinType:    s.skinType,
-      onboarded:   s.onboarded,
-      scanHistory: s.scanHistory,
+      language:       s.language,
+      languageFlag:   s.languageFlag,
+      recentSearches: s.recentSearches,
     };
     try {
-      localStorage.setItem('glowai_state', JSON.stringify(toSave));
+      localStorage.setItem('makoa_state', JSON.stringify(toSave));
     } catch (e) {
-      // #ASSUMPTION: localStorage quota ~5MB; scan history photos are the main risk
-      console.warn('[GlowAI] localStorage save failed:', e.message);
+      console.warn('[Makoa~Wave] localStorage save failed:', e.message);
     }
   }
 
@@ -80,33 +73,24 @@ const glowState = (() => {
 
   // ── Public API ──
   return {
-    get authToken()      { return state.authToken; },
-    set authToken(v)     { state.authToken = v; _save(state); },
+    get language()        { return state.language; },
+    set language(v)       { state.language = v; _save(state); },
 
-    get userEmail()      { return state.userEmail; },
-    set userEmail(v)     { state.userEmail = v; _save(state); },
+    get languageFlag()    { return state.languageFlag; },
+    set languageFlag(v)   { state.languageFlag = v; _save(state); },
 
-    get demoMode()       { return state.demoMode; },
-    set demoMode(v)      { state.demoMode = v; _save(state); },
+    get recentSearches()  { return state.recentSearches; },
+    set recentSearches(v) { state.recentSearches = v; _save(state); },
 
-    get skinType()       { return state.skinType; },
-    set skinType(v)      { state.skinType = v; _save(state); },
-
-    get onboarded()      { return state.onboarded; },
-    set onboarded(v)     { state.onboarded = v; _save(state); },
-
-    get scanHistory()    { return state.scanHistory; },
-    set scanHistory(v)   { state.scanHistory = v; _save(state); },
-
-    // transient — not persisted
-    get currentResult()  { return state.currentResult; },
-    set currentResult(v) { state.currentResult = v; },
+    // transient
+    get currentResult()   { return state.currentResult; },
+    set currentResult(v)  { state.currentResult = v; },
 
     persist() { _save(state); },
 
     reset() {
       Object.assign(state, _defaults);
-      localStorage.removeItem('glowai_state');
+      localStorage.removeItem('makoa_state');
     },
   };
 })();

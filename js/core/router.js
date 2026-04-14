@@ -1,16 +1,16 @@
-// router.js — GlowAI Hash-Based Screen Router
+// router.js — Makoa~Wave Hash-Based Screen Router
 // Aloha from Pearl City!
 
 const glowRouter = (() => {
   'use strict';
 
-  const _screens = ['splash', 'onboarding', 'scan'];
+  const _screens = ['splash', 'language', 'search'];
   let _current = null;
   let _onNavigate = null;
 
   function show(name) {
     if (!_screens.includes(name)) {
-      console.warn('[GlowAI] Unknown screen:', name);
+      console.warn('[Makoa~Wave] Unknown screen:', name);
       return;
     }
     // Hide all screens

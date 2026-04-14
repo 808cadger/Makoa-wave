@@ -1,4 +1,4 @@
-# main.py — GlowAI FastAPI proxy server
+# main.py — Makoa~Wave FastAPI proxy server
 # Aloha from Pearl City!
 #
 # Run: uvicorn main:app --reload --port 8000
@@ -25,7 +25,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 # ── App ───────────────────────────────────────────────────
 
-app = FastAPI(title="GlowAI API", version="1.0.0")
+app = FastAPI(title="AutoIQ API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -47,7 +47,7 @@ _VISION_MODEL = "claude-opus-4-6"
 _CHAT_MODEL   = "claude-sonnet-4-6"
 
 # System prompt lives server-side — not visible to clients
-_SCAN_SYSTEM = """You are GlowAI, a friendly and knowledgeable pocket esthetician. \
+_SCAN_SYSTEM = """You are Makoa~Wave, a friendly and knowledgeable pocket esthetician. \
 Your personality is calm, warm, non-shaming, and inclusive — like a trusted friend \
 who happens to know a lot about skincare.
 
@@ -73,6 +73,44 @@ Skin language:
 
 Return ONLY valid JSON — no markdown, no explanation."""
 
+_IDENTIFY_SYSTEM = """\
+You are a visual identification assistant. Given an image of any object, tool, part, \
+or component, identify exactly what it is and break it down into its visible parts and pieces.
+
+Be specific: use real part names, model numbers if visible, and correct terminology. \
+If you recognize a brand or standard size, mention it. \
+If the object is a tool, explain what jobs it's used for. \
+If it's a component or part, explain what system it belongs to.
+
+Return ONLY valid JSON with this structure:
+{
+  "name": "<specific name of the object>",
+  "category": "<e.g. Hand Tool, Fastener, Electrical Component, Plumbing Part, etc.>",
+  "description": "<2-3 sentences: what it is, what it does, when you'd use it>",
+  "parts": [
+    {
+      "name": "<part name>",
+      "description": "<what this part does or why it matters>",
+      "confidence": "high|medium|low"
+    }
+  ],
+  "suggestions": [
+    {
+      "icon": "<single emoji>",
+      "text": "<practical tip, common use, or buying advice>"
+    }
+  ],
+  "articles": [
+    {
+      "title": "<article title>",
+      "snippet": "<1-2 sentence summary>",
+      "search_query": "<Google search query to find this article>"
+    }
+  ]
+}
+
+3-6 parts, 2-4 suggestions, 2-3 articles. Return ONLY JSON — no markdown."""
+
 # ── Request / response models ─────────────────────────────
 
 class ScanRequest(BaseModel):
@@ -80,6 +118,15 @@ class ScanRequest(BaseModel):
     media_type: str = "image/jpeg"
     skin_type:  str = ""
     concerns:   list[str] = []
+
+class IdentifyRequest(BaseModel):
+    image_b64:  str
+    media_type: str = "image/jpeg"
+    question:   str = ""
+
+class LookupRequest(BaseModel):
+    query:    str
+    language: str = "English"
 
 class ChatMessage(BaseModel):
     role: str
@@ -131,7 +178,7 @@ def _extract_json(raw: str) -> dict:
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "GlowAI"}
+    return {"status": "ok", "service": "AutoIQ"}
 
 
 @app.post("/api/scan")
@@ -197,7 +244,7 @@ async def chat(
     """Advisor chat endpoint. Rate-limited to 30/hour per IP."""
     skin_ctx = f" The user's skin type is {body.skin_type}." if body.skin_type else ""
     system = (
-        "You are GlowAI, a warm and knowledgeable pocket esthetician. "
+        "You are Makoa~Wave, a warm and knowledgeable pocket esthetician. "
         "Give practical, gentle skincare advice. Never diagnose medical conditions. "
         f"Always recommend a dermatologist for medical concerns.{skin_ctx}"
     )
@@ -212,3 +259,86 @@ async def chat(
     data = await _call_anthropic(payload)
     text = "".join(b["text"] for b in data.get("content", []) if b.get("type") == "text").strip()
     return {"reply": text}
+
+
+@app.post("/api/lookup")
+@limiter.limit("30/hour")
+async def lookup(
+    request: Request,
+    body: LookupRequest,
+):
+    """Find the official website URL for a company or event name. No auth required."""
+    # #ASSUMPTION: query is plain text — no image involved
+    if not body.query.strip():
+        raise HTTPException(status_code=400, detail="query is required")
+
+    system = (
+        "You are a web research assistant. "
+        "Given a company or event name, return its official website URL. "
+        "Return ONLY valid JSON — no markdown, no explanation."
+    )
+    user_text = (
+        f'Find the official website for: "{body.query.strip()}"\n'
+        f"Respond in {body.language}.\n\n"
+        "Return ONLY this JSON:\n"
+        '{"name": "<official name>", "url": "<https://...>"}\n'
+        "The url must start with https://. If unsure, return the most likely official domain."
+    )
+
+    payload = {
+        "model":      _CHAT_MODEL,
+        "max_tokens": 256,
+        "system":     system,
+        "messages": [{"role": "user", "content": user_text}],
+    }
+
+    data = await _call_anthropic(payload)
+    raw  = "".join(b["text"] for b in data.get("content", []) if b.get("type") == "text").strip()
+    result = _extract_json(raw)
+
+    if not result.get("url", "").startswith("https://"):
+        raise HTTPException(status_code=502, detail="No website found for that name")
+
+    return result
+
+
+@app.post("/api/identify")
+@limiter.limit("15/hour")
+async def identify(
+    request: Request,
+    body: IdentifyRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Vision endpoint — identify any object and its parts. Rate-limited to 15/hour."""
+    # #ASSUMPTION: base64 image is JPEG, under ~4MB when decoded
+    if len(body.image_b64) > 6_000_000:
+        raise HTTPException(status_code=413, detail="Image too large — max ~4MB")
+
+    user_text = body.question.strip() if body.question.strip() else (
+        "Look at this image. Identify the object and break it down into its "
+        "visible parts and pieces. Include practical suggestions and related articles."
+    )
+
+    payload = {
+        "model":      _VISION_MODEL,
+        "max_tokens": 2000,
+        "system":     _IDENTIFY_SYSTEM,
+        "messages": [{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image",
+                    "source": {
+                        "type":       "base64",
+                        "media_type": body.media_type,
+                        "data":       body.image_b64,
+                    },
+                },
+                {"type": "text", "text": user_text},
+            ],
+        }],
+    }
+
+    data = await _call_anthropic(payload)
+    raw  = "".join(b["text"] for b in data.get("content", []) if b.get("type") == "text").strip()
+    return _extract_json(raw)

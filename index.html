@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0E0C0A">
-  <title>GlowAI</title>
+  <title>Makoa~Wave</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,244 +12,109 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/screens.css">
-  
 </head>
 <body>
 
-<!-- Ring light — always visible, mimics studio ring light -->
 <div id="ring-light"></div>
 
 <!-- ════ SPLASH ════ -->
 <div id="splash" class="screen active">
-  <div class="splash-logo">GlowAI</div>
-  <div class="splash-tagline">Your skin, understood.</div>
-  <div class="splash-sub">Pocket Esthetician · Powered by AI</div>
+  <div class="splash-logo">Makoa~Wave</div>
+  <div class="splash-tagline">Your event interpreter</div>
+  <div class="splash-sub">Find Any Event · Any Language · Anywhere</div>
 </div>
 
-<!-- ════ ONBOARDING ════ -->
-<div id="onboarding" class="screen">
-  <div class="ob-dots">
-    <div class="ob-dot on" id="ob-dot-0"></div>
-    <div class="ob-dot"    id="ob-dot-1"></div>
-    <div class="ob-dot"    id="ob-dot-2"></div>
+<!-- ════ LANGUAGE ════ -->
+<div id="language" class="screen">
+  <div class="lang-header">
+    <div class="lang-title">Choose your language</div>
+    <div class="lang-sub">We'll interpret everything in your language</div>
   </div>
-
-  <!-- Step 1: Skin type picker -->
-  <div class="ob-step active" id="ob-step-0">
-    <div class="ob-num">Step 1 of 3</div>
-    <div class="ob-icon">🌿</div>
-    <div class="ob-title">What's your skin type?</div>
-    <div class="ob-body">Tap the one that sounds most like you. Not sure? "Combination" is a safe starting point.</div>
-    <div class="ob-types" id="ob-skin-types">
-      <button class="ob-type-chip" data-type="Dry" onclick="glowOnboard.pickType(this)">🏜️ Dry<span class="ob-type-hint">Tight, flaky, drinks up moisturizer</span></button>
-      <button class="ob-type-chip" data-type="Oily" onclick="glowOnboard.pickType(this)">✨ Oily<span class="ob-type-hint">Shiny T-zone, visible pores</span></button>
-      <button class="ob-type-chip" data-type="Combination" onclick="glowOnboard.pickType(this)">🌗 Combination<span class="ob-type-hint">Oily forehead, dry cheeks</span></button>
-      <button class="ob-type-chip" data-type="Normal" onclick="glowOnboard.pickType(this)">🌸 Normal<span class="ob-type-hint">Balanced, not much trouble</span></button>
-      <button class="ob-type-chip" data-type="Sensitive" onclick="glowOnboard.pickType(this)">🫧 Sensitive<span class="ob-type-hint">Reacts easily, redness-prone</span></button>
-    </div>
-    <button class="ob-btn" id="ob-type-next" onclick="glowOnboard.next()" disabled>Continue</button>
-    <button class="ob-skip" onclick="glowOnboard.skip()">Skip intro</button>
-  </div>
-
-  <!-- Step 2 -->
-  <div class="ob-step" id="ob-step-1">
-    <div class="ob-num">Step 2 of 3</div>
-    <div class="ob-icon">📸</div>
-    <div class="ob-title">Show us a quick selfie</div>
-    <div class="ob-body">Take a photo in natural light, or upload one from your camera roll.<br>GlowAI only uses your photo for analysis — it's never stored or shared.</div>
-    <button class="ob-btn" onclick="glowOnboard.next()">Got it</button>
-    <button class="ob-skip" onclick="glowOnboard.skip()">Skip intro</button>
-  </div>
-
-  <!-- Step 3 -->
-  <div class="ob-step" id="ob-step-2">
-    <div class="ob-num">Step 3 of 3</div>
-    <div class="ob-icon">✨</div>
-    <div class="ob-title">Meet your pocket esthetician</div>
-    <div class="ob-body">You'll get a plain-English skin read and a gentle routine built just for you — adjustable any time.<br><br><em style="color:rgba(255,255,255,0.35);font-size:12px">GlowAI is a skincare assistant, not a medical tool. Always see a dermatologist for medical concerns.</em></div>
-    <button class="ob-btn" onclick="glowOnboard.finish()">Let's begin →</button>
+  <div class="lang-grid" id="lang-grid">
+    <button class="lang-chip" data-lang="English"       data-code="en" onclick="glowLang.pick(this)">🇺🇸<span>English</span></button>
+    <button class="lang-chip" data-lang="Español"       data-code="es" onclick="glowLang.pick(this)">🇪🇸<span>Español</span></button>
+    <button class="lang-chip" data-lang="Français"      data-code="fr" onclick="glowLang.pick(this)">🇫🇷<span>Français</span></button>
+    <button class="lang-chip" data-lang="Português"     data-code="pt" onclick="glowLang.pick(this)">🇧🇷<span>Português</span></button>
+    <button class="lang-chip" data-lang="Deutsch"       data-code="de" onclick="glowLang.pick(this)">🇩🇪<span>Deutsch</span></button>
+    <button class="lang-chip" data-lang="Italiano"      data-code="it" onclick="glowLang.pick(this)">🇮🇹<span>Italiano</span></button>
+    <button class="lang-chip" data-lang="日本語"         data-code="ja" onclick="glowLang.pick(this)">🇯🇵<span>日本語</span></button>
+    <button class="lang-chip" data-lang="한국어"         data-code="ko" onclick="glowLang.pick(this)">🇰🇷<span>한국어</span></button>
+    <button class="lang-chip" data-lang="中文"           data-code="zh" onclick="glowLang.pick(this)">🇨🇳<span>中文</span></button>
+    <button class="lang-chip" data-lang="العربية"       data-code="ar" onclick="glowLang.pick(this)">🇸🇦<span>العربية</span></button>
+    <button class="lang-chip" data-lang="हिंदी"          data-code="hi" onclick="glowLang.pick(this)">🇮🇳<span>हिंदी</span></button>
+    <button class="lang-chip" data-lang="Русский"       data-code="ru" onclick="glowLang.pick(this)">🇷🇺<span>Русский</span></button>
+    <button class="lang-chip" data-lang="Filipino"      data-code="fil" onclick="glowLang.pick(this)">🇵🇭<span>Filipino</span></button>
+    <button class="lang-chip" data-lang="Tagalog"       data-code="tl" onclick="glowLang.pick(this)">🇵🇭<span>Tagalog</span></button>
+    <button class="lang-chip" data-lang="Nederlands"    data-code="nl" onclick="glowLang.pick(this)">🇳🇱<span>Nederlands</span></button>
+    <button class="lang-chip" data-lang="ʻŌlelo Hawaiʻi" data-code="haw" onclick="glowLang.pick(this)">🌺<span>Hawaiʻi</span></button>
   </div>
 </div>
 
-<!-- ════ SCAN (main) ════ -->
-<div id="scan" class="screen">
-
-  <div class="photo-zone" id="photo-zone" onclick="glowScan.tapZone()">
-    <div id="scan-placeholder">
-      <div class="scan-ring"><span class="scan-icon">🌿</span></div>
-      <div class="scan-label">Scan My Skin</div>
-      <div class="scan-sub">Selfie · Upload · Camera</div>
-    </div>
-    <video id="scan-video" autoplay playsinline muted style="display:none;width:100%;height:100%;object-fit:cover;border-radius:inherit"></video>
-    <img id="scan-photo" src="" alt="">
-    <canvas id="scan-canvas" style="display:none"></canvas>
-    <button id="cam-capture-btn" onclick="event.stopPropagation();glowScan.captureVideo()" style="display:none;position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(232,165,152,0.22);backdrop-filter:blur(8px);border:1.5px solid rgba(232,165,152,0.42);color:#fff;font-size:15px;padding:10px 28px;border-radius:24px;cursor:pointer;letter-spacing:.03em">Take Photo</button>
-    <button id="cam-cancel-btn" onclick="event.stopPropagation();glowScan.stopCamera()" style="display:none;position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.45);border:none;color:#fff;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;line-height:34px;text-align:center">✕</button>
-    <button id="photo-back-btn" onclick="event.stopPropagation();glowScan.clearPhoto()" style="display:none;position:absolute;top:14px;left:14px;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);border:none;color:#fff;font-size:13px;padding:7px 14px;border-radius:20px;cursor:pointer;letter-spacing:.02em">← Retake</button>
+<!-- ════ SEARCH ════ -->
+<div id="search" class="screen">
+  <div class="search-header">
+    <div class="search-headline">Find any event</div>
+    <button class="search-lang-badge" id="search-lang-badge" onclick="glowRouter.show('language')">
+      <span class="search-lang-flag" id="search-lang-flag">🌐</span>
+      <span class="search-lang-name" id="search-lang-name">English</span>
+    </button>
   </div>
 
-  <input type="file" id="scan-file" accept="image/*" capture="user" style="display:none" onchange="glowScan.onFileChange(event)">
-
-  <!-- Floating icons — all draggable -->
-  <div class="float-icon"      id="float-camera"   data-key="float-camera">📷</div>
-  <div class="float-icon"      id="float-settings" data-key="float-settings">⚙️</div>
-  <div class="float-icon"      id="float-history"  data-key="float-history">📊</div>
-  <div class="float-icon"      id="float-concerns" data-key="float-concerns">＋ Concerns</div>
-  <!-- Hidden legacy analyze icon (replaced by analyze-bar) -->
-  <div class="float-icon pink" id="float-analyze"  data-key="float-analyze" style="display:none!important">✨</div>
-
-</div>
-
-<!-- Big analyze CTA — appears after photo loaded -->
-<div id="analyze-bar">
-  <button class="analyze-cta" onclick="glowScan.analyze()">Analyze My Skin ✨</button>
-  <div class="analyze-hint">AI reads visible skin characteristics only</div>
-</div>
-
-<!-- Sheet overlay -->
-<div id="sheet-overlay" onclick="closeAllSheets()"></div>
-
-<!-- ════ RESULTS SHEET ════ -->
-<div id="results-sheet" class="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">Your Skin Read</div>
-  <div class="sheet-body">
-    <div id="results-error" class="err-banner hidden"></div>
-    <div class="score-wrap">
-      <svg width="144" height="144" viewBox="0 0 144 144">
-        <circle cx="72" cy="72" r="60" fill="none" stroke="#f0f0f0" stroke-width="10"/>
-        <circle cx="72" cy="72" r="60" fill="none" stroke="url(#sGrad)" stroke-width="10"
-          stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"
-          transform="rotate(-90 72 72)" id="score-arc"
-          style="transition:stroke-dashoffset 1.2s cubic-bezier(0.34,1.2,0.64,1)"/>
-        <defs>
-          <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#D4AF82"/>
-            <stop offset="100%" stop-color="#E8A598"/>
-          </linearGradient>
-        </defs>
-        <text x="72" y="67" text-anchor="middle" fill="#111" font-size="36" font-weight="800" font-family="Inter,sans-serif" id="score-num">—</text>
-        <text x="72" y="86" text-anchor="middle" fill="#bbb" font-size="11" font-family="Inter,sans-serif">/ 100</text>
-      </svg>
-    </div>
-    <div style="text-align:center">
-      <span id="results-skin-type" class="skin-badge" style="display:none"></span>
-    </div>
-    <div id="results-summary" class="result-summary"></div>
-    <div class="sec-title">Concerns</div>
-    <div id="results-concerns"></div>
-    <div class="sec-title">Recommendations</div>
-    <div id="results-recs"></div>
-    <div class="result-actions">
-      <button class="btn-pink"    onclick="glowScan.saveResult()">Save This Result</button>
-      <button class="btn-outline" onclick="closeAllSheets(); glowScan.clearPhoto()">New Scan</button>
-    </div>
-    <div style="margin-top:18px;padding:12px 14px;background:rgba(168,184,156,0.1);border-radius:10px;border:1px solid rgba(168,184,156,0.2)">
-      <div style="font-size:11.5px;color:#888;line-height:1.6;text-align:center">
-        Preliminary read. Visible skin characteristics only.<br>
-        Always patch-test new products · See a dermatologist for medical concerns.
-      </div>
-    </div>
+  <div class="search-box">
+    <input
+      class="search-input"
+      id="search-input"
+      type="text"
+      placeholder="e.g. Coachella, Apple, Comic-Con…"
+      autocomplete="off"
+      autocorrect="off"
+      spellcheck="false"
+      onkeydown="if(event.key==='Enter') glowSearch.find()"
+    >
+    <button class="search-btn" id="search-btn" onclick="glowSearch.find()">
+      <span id="search-btn-text">Find →</span>
+    </button>
   </div>
-</div>
 
-<!-- ════ CONCERNS SHEET ════ -->
-<div id="concerns-sheet" class="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">What's on your mind?</div>
-  <div class="sheet-body">
-    <div class="chips-grid" id="concern-chips">
-      <div class="c-chip" data-val="Acne"              onclick="this.classList.toggle('on')">Acne</div>
-      <div class="c-chip" data-val="Dryness"           onclick="this.classList.toggle('on')">Dryness</div>
-      <div class="c-chip" data-val="Oiliness"          onclick="this.classList.toggle('on')">Oiliness</div>
-      <div class="c-chip" data-val="Hyperpigmentation" onclick="this.classList.toggle('on')">Hyperpigmentation</div>
-      <div class="c-chip" data-val="Redness"           onclick="this.classList.toggle('on')">Redness</div>
-      <div class="c-chip" data-val="Sensitivity"       onclick="this.classList.toggle('on')">Sensitivity</div>
-      <div class="c-chip" data-val="Fine Lines"        onclick="this.classList.toggle('on')">Fine Lines</div>
-      <div class="c-chip" data-val="Large Pores"       onclick="this.classList.toggle('on')">Large Pores</div>
-      <div class="c-chip" data-val="Dark Spots"        onclick="this.classList.toggle('on')">Dark Spots</div>
-      <div class="c-chip" data-val="Dark Circles"      onclick="this.classList.toggle('on')">Dark Circles</div>
-      <div class="c-chip" data-val="Uneven Texture"    onclick="this.classList.toggle('on')">Uneven Texture</div>
-      <div class="c-chip" data-val="Dullness"          onclick="this.classList.toggle('on')">Dullness</div>
-    </div>
-    <div style="font-size:12px;color:#aaa;margin-bottom:12px">Select up to 3 — no right or wrong answers.</div>
-    <button class="btn-save" onclick="closeSheet('concerns-sheet')">Done ✓</button>
+  <div class="search-error" id="search-error" style="display:none"></div>
+
+  <!-- Result card -->
+  <div class="search-result" id="search-result" style="display:none">
+    <div class="result-name" id="result-name"></div>
+    <div class="result-url" id="result-url"></div>
+    <button class="result-open-btn" id="result-open-btn" onclick="glowSearch.open()">
+      Open Website →
+    </button>
+    <div class="result-hint">Opens in your browser · Makoa~Wave stays available to help you interpret</div>
   </div>
-</div>
 
-<!-- ════ ACCOUNT SHEET ════ -->
-<div id="settings-sheet" class="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">Account</div>
-  <div class="sheet-body">
-
-    <!-- ── Not signed in ── -->
-    <div id="auth-panel">
-      <div class="field-lbl">Email</div>
-      <input class="field-input" id="auth-email" type="email" placeholder="you@example.com"
-        autocomplete="email" inputmode="email">
-      <div style="height:10px"></div>
-      <div class="field-lbl">Password</div>
-      <input class="field-input" id="auth-password" type="password" placeholder="••••••••"
-        autocomplete="current-password"
-        onkeydown="if(event.key==='Enter') glowApp.authSubmit('login')">
-      <div id="auth-error" class="err-banner hidden"></div>
-      <button class="btn-save" id="auth-login-btn" onclick="glowApp.authSubmit('login')">Sign In</button>
-      <button class="btn-outline" style="width:100%;margin-top:10px;padding:14px;border-radius:14px"
-        onclick="glowApp.authSubmit('register')">Create Account</button>
-      <div style="height:20px"></div>
-      <div class="field-lbl">Just Exploring?</div>
-      <div style="font-size:13px;color:#aaa;margin-bottom:8px">Try a demo read without an account</div>
-      <button class="btn-demo" data-demo-btn onclick="glowApp.toggleDemo()">Demo Mode</button>
-    </div>
-
-    <!-- ── Signed in ── -->
-    <div id="account-panel" style="display:none">
-      <div style="text-align:center;padding:18px 0 24px">
-        <div style="font-size:38px;margin-bottom:10px">✨</div>
-        <div style="font-size:15px;font-weight:700;color:#111" id="account-email">—</div>
-        <div style="font-size:12px;color:#aaa;margin-top:3px">Signed in</div>
-      </div>
-      <button class="btn-demo" data-demo-btn onclick="glowApp.toggleDemo()">Demo Mode</button>
-      <button class="btn-ghost" onclick="glowApp.logout()">Sign Out</button>
-      <button class="btn-ghost" style="margin-top:6px" onclick="glowApp.resetApp()">Reset All Data</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ════ HISTORY SHEET ════ -->
-<div id="history-sheet" class="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">Your Progress</div>
-  <div class="sheet-body">
-    <div id="history-list"></div>
+  <!-- Recent searches -->
+  <div class="recent-wrap" id="recent-wrap" style="display:none">
+    <div class="recent-label">Recent</div>
+    <div class="recent-list" id="recent-list"></div>
   </div>
 </div>
 
 <!-- ════ ANALYZING OVERLAY ════ -->
-<div id="analyzing">
-  <div class="spin">🌿</div>
-  <div class="ana-title">Reading your skin...</div>
-  <div class="ana-sub">Gentle · Accurate · Judgment-free</div>
+<div id="analyzing" style="display:none">
+  <div class="spin">🌐</div>
+  <div class="ana-title" id="ana-title">Finding website…</div>
+  <div class="ana-sub">Powered by Claude AI</div>
 </div>
 
 <div id="toast"></div>
 
-<!-- Server URL override (Capacitor needs absolute IP) -->
-<script src="js/config.js"></script>
 <!-- Core -->
+<script src="js/config.js"></script>
 <script src="js/core/state.js"></script>
 <script src="js/core/events.js"></script>
 <script src="js/core/router.js"></script>
 <script src="js/core/api.js"></script>
 <!-- Widgets -->
 <script src="js/widgets/toast.js"></script>
-<script src="js/widgets/sheets.js"></script>
-<script src="js/widgets/floaticons.js"></script>
 <!-- Screens -->
-<script src="js/screens/scan.js"></script>
-<script src="js/screens/onboard.js"></script>
+<script src="js/screens/language.js"></script>
+<script src="js/screens/search.js"></script>
 <!-- App controller -->
 <script src="js/main.js"></script>
 </body>

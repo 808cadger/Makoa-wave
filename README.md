@@ -1,10 +1,35 @@
-# GlowAI
+# Makoa Wave
+
+[![Release](https://img.shields.io/github/v/release/808cadger/Makoa-wave?include_prereleases&label=release)](https://github.com/808cadger/Makoa-wave/releases)
+[![Last commit](https://img.shields.io/github/last-commit/808cadger/Makoa-wave)](https://github.com/808cadger/Makoa-wave/commits)
+[![License](https://img.shields.io/github/license/808cadger/Makoa-wave)](https://github.com/808cadger/Makoa-wave/blob/HEAD/LICENSE)
+![Platforms](https://img.shields.io/badge/platform-Web%2FPWA%2C%20Android%2C%20Desktop%2C%20API%20service-2563eb)
+
+AI skincare app for face scans, personalized routines, progress tracking, and dermatology-style chat.
+
+## Project Snapshot
+
+| Area | Details |
+|------|---------|
+| Primary use case | AI skincare app for face scans, personalized routines, progress tracking, and dermatology-style chat. |
+| Platforms | Web/PWA, Android, Desktop, API service |
+| Core stack | JavaScript, Capacitor, Android, Electron, FastAPI |
+| Review first | `index.html`, `server`, `android`, `capacitor.config.json`, `package.json` |
 
 ## Download Links
 
-- **iOS / iPhone:** Open the PWA in Safari: [Makoa Wave iOS install](https://808cadger.github.io/Makoa-wave/) and choose **Share -> Add to Home Screen**.
-- **Android:** Download the latest APK from GitHub Releases: [Makoa Wave Android releases](https://github.com/808cadger/Makoa-wave/releases/latest).
-- **Source download:** [Download the GitHub source ZIP](https://github.com/808cadger/Makoa-wave/archive/refs/heads/main.zip).
+| Platform | Link |
+|----------|------|
+| iOS / iPhone | [Open the PWA in Safari](https://808cadger.github.io/Makoa-wave/) and choose **Share -> Add to Home Screen** |
+| Android | [Download the latest APK from GitHub Releases](https://github.com/808cadger/Makoa-wave/releases/latest) |
+| Source | [Download the GitHub source ZIP](https://github.com/808cadger/Makoa-wave/archive/refs/heads/main.zip) |
+| Repository | [View on GitHub](https://github.com/808cadger/Makoa-wave) |
+
+## Why This Repo Is Worth Reviewing
+
+- End-to-end skin analysis experience from scan to routine.
+- Multi-platform packaging demonstrates mobile and desktop delivery.
+- Backend service boundary keeps AI/API work separate from the client.
 
 
 <!-- INSTALL-START -->

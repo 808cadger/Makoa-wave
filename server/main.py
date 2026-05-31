@@ -43,7 +43,7 @@ app.include_router(auth_router)
 
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 _ANTHROPIC_VERSION = "2023-06-01"
-_VISION_MODEL = "claude-opus-4-6"
+_VISION_MODEL = "claude-opus-4-8"
 _CHAT_MODEL   = "claude-sonnet-4-6"
 
 # System prompt lives server-side — not visible to clients
